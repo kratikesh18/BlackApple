@@ -497,6 +497,7 @@ function SpotifyCurrentState() {
   const [isAvailable, setIsAvailable] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const [track, setTrack] = useState<TrackType>({
     album: {
       name: "Shehron Ke Raaz",
@@ -510,75 +511,77 @@ function SpotifyCurrentState() {
     artists: [{ name: "Prateek Kuhad" }],
     name: "Tere Hi Hum",
   });
+
   const { session } = useMySession();
 
-  // useEffect(() => {
-  //   // if (hasFetched.current) return; // Prevent multiple fetches
-  //   // hasFetched.current = true; // Set the flag to true after the first fetch
+  // logic for fetching the current playing track
+  useEffect(() => {
+    // if (hasFetched.current) return; // Prevent multiple fetches
+    // hasFetched.current = true; // Set the flag to true after the first fetch
 
-  //   const getCurrentPlayingTrack = async () => {
-  //     setLoading(true);
-  //     // setTimeout(() => {
-  //     //   console.log("hello");
-  //     //   setLoading(false);
-  //     // }, 100000);
-  //     setError("");
+    const getCurrentPlayingTrack = async () => {
+      setLoading(true);
+      // setTimeout(() => {
+      //   console.log("hello");
+      //   setLoading(false);
+      // }, 100000);
+      setError("");
 
-  //     try {
-  //       const response = await axios.get(
-  //         "https://api.spotify.com/v1/me/player/currently-playing/",
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${session?.accessToken}`,
-  //           },
-  //         }
-  //       );
+      try {
+        const response = await axios.get(
+          "https://api.spotify.com/v1/me/player/currently-playing/",
+          {
+            headers: {
+              Authorization: `Bearer ${session?.accessToken}`,
+            },
+          }
+        );
 
-  //       if (response.status === 204) {
-  //         setError("No track is currently playing on Spotify.");
-  //         setIsAvailable(false);
-  //         return;
-  //       }
+        if (response.status === 204) {
+          setError("No track is currently playing on Spotify.");
+          setIsAvailable(false);
+          return;
+        }
 
-  //       if (response.status === 401) {
-  //         setError("Token expired. Please re-authenticate.");
-  //         setIsAvailable(false);
-  //         return;
-  //       }
+        if (response.status === 401) {
+          setError("Token expired. Please re-authenticate.");
+          setIsAvailable(false);
+          return;
+        }
 
-  //       if (response.status === 200 && response.data) {
-  //         setTrack({
-  //           album: {
-  //             name: response.data.item.album.name,
-  //             artists: response.data.item.album.artists.map((artist: any) => ({
-  //               name: artist.name,
-  //             })),
-  //             images: response.data.item.album.images,
-  //           },
-  //           artists: response.data.item.artists.map((artist: any) => ({
-  //             name: artist.name,
-  //           })),
-  //           name: response.data.item.name,
-  //         });
-  //         setIsAvailable(true);
-  //       }
-  //     } catch (error) {
-  //       if (error instanceof AxiosError) {
-  //         const { response } = error;
-  //         setError(
-  //           response?.data?.error?.message || "Hold on, we are working on this."
-  //         );
-  //       } else {
-  //         setError("An unexpected error occurred.");
-  //       }
-  //       setIsAvailable(false);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+        if (response.status === 200 && response.data) {
+          setTrack({
+            album: {
+              name: response.data.item.album.name,
+              artists: response.data.item.album.artists.map((artist: any) => ({
+                name: artist.name,
+              })),
+              images: response.data.item.album.images,
+            },
+            artists: response.data.item.artists.map((artist: any) => ({
+              name: artist.name,
+            })),
+            name: response.data.item.name,
+          });
+          setIsAvailable(true);
+        }
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          const { response } = error;
+          setError(
+            response?.data?.error?.message || "Hold on, we are working on this."
+          );
+        } else {
+          setError("An unexpected error occurred.");
+        }
+        setIsAvailable(false);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //   // getCurrentPlayingTrack();
-  // }, [session]);
+    // getCurrentPlayingTrack();
+  }, [session]);
 
   if (loading) {
     return <SpotifyStateSkeleton />;

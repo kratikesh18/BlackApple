@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 const tempGrooveData = [
   {
     line: "kaise badalte kaise guzarte din",
@@ -225,13 +225,65 @@ const tempGrooveData = [
 ];
 
 function GrooveTab() {
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const lyricsContainerRef = useRef<HTMLDivElement>(null);
+  const currentLineRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (currentLineRef.current && lyricsContainerRef.current) {
+      lyricsContainerRef.current.scrollTo({
+        top:
+          currentLineRef.current.offsetTop -
+          lyricsContainerRef.current.offsetHeight / 2,
+        behavior: "smooth",
+      });
+      // console.log("scrolled");
+    }
+  }, [currentTime]);
+
+  useEffect(() => {
+    const interval = setInterval(
+      () => setCurrentTime((prev) => prev + 1),
+      1000
+    );
+    return () => clearInterval(interval);
+  });
+
+  const getCurrentLine = useCallback(() => {
+    const currentlineToSend = tempGrooveData.find(
+      (line) => line.startTime <= currentTime && line.endTime >= currentTime
+    );
+    // console.log(currentlineToSend);
+    return currentlineToSend;
+  }, [currentTime]);
+
+  const currentLine = getCurrentLine();
+
+  const setCurrentLineToClicked = (index: number) => {
+    setCurrentTime(tempGrooveData[index].startTime);
+  };
+
+  
   return (
-    <div className="flex flex-col gap-2">
-      {tempGrooveData.map((item) => (
-        <div key={item._id} className="flex flex-col gap-1 p-2 rounded-md">
-          <p className="text-xl md:text-2xl font-medium  md:font-semibold">
+    <div
+      className="flex flex-col gap-2 overflow-scroll scrollbar-none"
+      ref={lyricsContainerRef}
+    >
+      {tempGrooveData.map((item, index) => (
+        <div
+          key={item._id}
+          // className="flex flex-col gap-1 p-2 rounded-md"
+          className={`cursor-pointer p-2 rounded-md transition  `}
+          ref={currentLine === item ? currentLineRef : null}
+          onClick={() => setCurrentLineToClicked(index)}
+        >
+          <h1
+            className={` text-xl md:text-2xl font-medium  md:font-semibold ${
+              currentLine === item ? "text-white" : "text-gray-400/90"
+            }`}
+          >
             {item.line}
-          </p>
+          </h1>
           <div className="text-xs flex justify-between text-gray-400">
             <p>{new Date(item.startTime * 1000).toISOString().substr(14, 5)}</p>
             <p>{new Date(item.endTime * 1000).toISOString().substr(14, 5)}</p>

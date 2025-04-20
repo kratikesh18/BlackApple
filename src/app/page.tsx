@@ -16,10 +16,10 @@ export default function Home() {
         <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
         {/* Content Sections */}
-        <div className="w-full h-full my-4 overflow-y-scroll scrollbar-none">
+       
           {activeTab === "Explore" && <ExploreTab />}
           {activeTab === "Groove" && <GrooveTab />}
-        </div>
+    
 
         {/* Spotify Current State */}
         <SectionWrapper className="bg-gray-200/10 backdrop-blur-2xl bg-opacity-10 border border-white/20 px-3 rounded-lg ">
