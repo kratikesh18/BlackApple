@@ -5,9 +5,9 @@ const Logo = () => {
   return (
     <Link
       href="/"
-      className="hover:text-gray-300 transition-colors  text-3xl font-extrabold tracking-wider"
+      className="hover:text-gray-300 transition-colors font-extrabold tracking-wider"
     >
-      <h1 className="theme-text-style text-2xl">blueCocain</h1>
+      <h1 className="theme-text-style text-lg md:text-2xl">blueCocain</h1>
     </Link>
   );
 };

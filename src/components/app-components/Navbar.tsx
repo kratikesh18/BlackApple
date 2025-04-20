@@ -19,11 +19,11 @@ const Navbar = () => {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   return (
-    <nav className="container rounded-lg py-3 px-8 bg-gray-200/10 bg-opacity-10 border border-white/20 flex gap-4 items-center  justify-between ">
+    <nav className="container rounded-lg py-3 px-8 bg-gray-200/10 bg-opacity-10 border border-white/20 flex gap-4 items-center justify-between ">
       {/* add icon */}
       <div>
         <Link
-          href={"#"}
+          href={"/contribute,"}
           title="Contribute"
           className="hover:opacity-75 transition-opacity cursor-pointer"
         >
@@ -44,10 +44,10 @@ const Navbar = () => {
             <PopoverTrigger title="Search">
               <SearchIcon />
             </PopoverTrigger>
-            <PopoverContent className="mt-4 mr-4 w-full border-transparent bg-white/10 backdrop-blur-2xl text-white ">
+            <PopoverContent className="mt-4 mr-4 w-full border-transparent bg-white/10 backdrop-blur-2xl text-white">
               <Input
                 type="text"
-                className="border-2 py-5 px-4 w-full text-2xl rounded-md active:border-none "
+                className="border-2 py-5 px-4 w-full text-lg rounded-md active:border-none  "
                 placeholder="Find Lyrics"
               />
             </PopoverContent>
@@ -62,10 +62,10 @@ const Navbar = () => {
 
         {status === "authenticated" ? (
           <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger title="Profile">
+            <PopoverTrigger title="Profile" className="cursor-pointer">
               <UserIcon />
             </PopoverTrigger>
-            <PopoverContent className="w-fit mr-4 mt-4 bg-transparent backdrop-blur-3xl border-gray-300/30 text-gray-200 flex font-semibold flex-col justify-center items-center gap-4">
+            <PopoverContent className="w-fit mr-4 mt-4 bg-transparent backdrop-blur-3xl border-gray-300/30 text-gray-200 flex font-semibold flex-col justify-center items-center gap-4 cursor-pointer">
               {pathname == "/profile" ? (
                 <Link
                   className="flex justify-between gap-2
