@@ -3,7 +3,7 @@ import { HeroSearchBar } from "./HeroSearchBar";
 
 function ExploreTab() {
   return (
-    <div className="h-full flex flex-col gap-4 justify-between items-center">
+    <div className="h-full flex flex-col gap-4 justify-between items-center my-3">
       <HeroSearchBar />
       <h1 className="text-2xl font-bold ">Explore Section</h1>
       <p>

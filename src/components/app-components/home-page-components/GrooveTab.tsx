@@ -1,3 +1,5 @@
+import EditIcon from "@/components/icons/EditIcon";
+import Link from "next/link";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 const tempGrooveData = [
   {
@@ -259,14 +261,13 @@ function GrooveTab() {
 
   const currentLine = getCurrentLine();
 
-  const setCurrentLineToClicked = (index: number) => {
+  const setClickedLineToCurrent = (index: number) => {
     setCurrentTime(tempGrooveData[index].startTime);
   };
 
-  
   return (
     <div
-      className="flex flex-col gap-2 overflow-scroll scrollbar-none"
+      className="flex flex-col gap-2 overflow-scroll scrollbar-none my-2 "
       ref={lyricsContainerRef}
     >
       {tempGrooveData.map((item, index) => (
@@ -275,7 +276,7 @@ function GrooveTab() {
           // className="flex flex-col gap-1 p-2 rounded-md"
           className={`cursor-pointer p-2 rounded-md transition  `}
           ref={currentLine === item ? currentLineRef : null}
-          onClick={() => setCurrentLineToClicked(index)}
+          onClick={() => setClickedLineToCurrent(index)}
         >
           <h1
             className={` text-xl md:text-2xl font-medium  md:font-semibold ${
@@ -290,6 +291,12 @@ function GrooveTab() {
           </div>
         </div>
       ))}
+      <Link
+        href={"/contribute/hex"}
+        className="fixed bottom-44 right-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold p-3 rounded-full shadow-lg transition"
+      >
+        <EditIcon />
+      </Link>
     </div>
   );
 }

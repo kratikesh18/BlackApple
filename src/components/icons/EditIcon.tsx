@@ -1,14 +1,14 @@
 import React from "react";
 
-const EditIcon = ({ className = "" }) => {
+const EditIcon = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
-      strokeWidth={1.5}
+      strokeWidth={1.4}
       stroke="currentColor"
-      className={`w-8 h-8 ${className}`}
+      className="size-7"
     >
       <path
         strokeLinecap="round"
