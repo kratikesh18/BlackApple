@@ -10,6 +10,105 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import React, { useEffect } from "react";
 import Link from "next/link";
 import axios from "axios";
+import {
+  MyTopArtistsResponse,
+  RecentlyPlayedResponse,
+} from "@/types/RecentlyPlayedResponse";
+
+const tempRecentlyPlayed = {
+  items: [
+    {
+      track: {
+        album: {
+          album_type: "album",
+          artists: [
+            {
+              external_urls: {
+                spotify:
+                  "https://open.spotify.com/artist/1mYsTxnqsietFxj1OgoGbG",
+              },
+              href: "https://api.spotify.com/v1/artists/1mYsTxnqsietFxj1OgoGbG",
+              id: "1mYsTxnqsietFxj1OgoGbG",
+              name: "A.R. Rahman",
+              type: "artist",
+              uri: "spotify:artist:1mYsTxnqsietFxj1OgoGbG",
+            },
+          ],
+          external_urls: {
+            spotify: "https://open.spotify.com/album/3HpV4jIHMPWTHuwMFMReue",
+          },
+          href: "https://api.spotify.com/v1/albums/3HpV4jIHMPWTHuwMFMReue",
+          id: "3HpV4jIHMPWTHuwMFMReue",
+          images: [
+            {
+              height: 640,
+              url: "https://i.scdn.co/image/ab67616d0000b273a4686f3b95e096ba4ce53f83",
+              width: 640,
+            },
+            {
+              height: 300,
+              url: "https://i.scdn.co/image/ab67616d00001e02a4686f3b95e096ba4ce53f83",
+              width: 300,
+            },
+            {
+              height: 64,
+              url: "https://i.scdn.co/image/ab67616d00004851a4686f3b95e096ba4ce53f83",
+              width: 64,
+            },
+          ],
+          name: "I",
+          release_date: "2015-01-09",
+          release_date_precision: "day",
+          total_tracks: 7,
+          type: "album",
+          uri: "spotify:album:3HpV4jIHMPWTHuwMFMReue",
+        },
+        artists: [
+          {
+            external_urls: {
+              spotify: "https://open.spotify.com/artist/4YRxDV8wJFPHPTeXepOstw",
+            },
+            href: "https://api.spotify.com/v1/artists/4YRxDV8wJFPHPTeXepOstw",
+            id: "4YRxDV8wJFPHPTeXepOstw",
+            name: "Arijit Singh",
+            type: "artist",
+            uri: "spotify:artist:4YRxDV8wJFPHPTeXepOstw",
+          },
+          {
+            external_urls: {
+              spotify: "https://open.spotify.com/artist/0oOet2f43PA68X5RxKobEy",
+            },
+            href: "https://api.spotify.com/v1/artists/0oOet2f43PA68X5RxKobEy",
+            id: "0oOet2f43PA68X5RxKobEy",
+            name: "Shreya Ghoshal",
+            type: "artist",
+            uri: "spotify:artist:0oOet2f43PA68X5RxKobEy",
+          },
+        ],
+        disc_number: 1,
+        duration_ms: 308485,
+        explicit: false,
+        external_ids: {
+          isrc: "INS181427607",
+        },
+        external_urls: {
+          spotify: "https://open.spotify.com/track/0XCtA9pYB0aOciPzrJpkAK",
+        },
+        href: "https://api.spotify.com/v1/tracks/0XCtA9pYB0aOciPzrJpkAK",
+        id: "0XCtA9pYB0aOciPzrJpkAK",
+        is_local: false,
+        name: "Tu Chale",
+        popularity: 57,
+        preview_url: null,
+        track_number: 3,
+        type: "track",
+        uri: "spotify:track:0XCtA9pYB0aOciPzrJpkAK",
+      },
+      played_at: "2025-04-30T18:40:35.796Z",
+      context: null,
+    },
+  ],
+};
 
 const ProfilePage = () => {
   const { session, status } = useMySession();
@@ -111,37 +210,53 @@ const ProfilePage = () => {
     },
   ];
 
+  const [recentlyPlayed, setRecentlyPlayed] = React.useState<
+    RecentlyPlayedResponse[] | null
+  >(null);
 
-  const [recentlyPlayed, setRecentlyPlayed] = React.useState<any>([]);
+  const [myTopArtists, setMyTopArtists] = React.useState<
+    MyTopArtistsResponse[] | null
+  >(null);
+
   useEffect(() => {
     const getRecentlyPlayedSongs = async () => {
       try {
         const response = await axios.get(
-          "https://api.spotify.com/v1/me/player/recently-played",
+          "https://api.spotify.com/v1/me/player/recently-played?limit=5",
           {
             headers: {
               Authorization: `Bearer ${session?.accessToken}`,
             },
           }
         );
-        if (response.status === 200 && response.data) {
-          ({
-            album: {
-              name: response.data.item.album.name,
-              artists: response.data.item.album.artists.map((artist: any) => ({
-                name: artist.name,
-              })),
-              images: response.data.item.album.images,
-            },
-            artists: response.data.item.artists.map((artist: any) => ({
-              name: artist.name,
-            })),
-            name: response.data.item.name,
-          });
+        if (response.status === 200) {
+          setRecentlyPlayed(response.data?.items);
+          // console.log(response.data.items);
+        }
+        // console.log(response.status === 200);
       } catch (error) {
         console.error("Error fetching recently played songs:", error);
       }
     };
+
+    const getMyTopArtists = async () => {
+      try {
+        const response = await axios.get(
+          "https://api.spotify.com/v1/me/top/artists?limit=5",
+          {
+            headers: {
+              Authorization: `Bearer ${session?.accessToken}`,
+            },
+          }
+        );
+        if (response.status === 200) {
+          setMyTopArtists(response.data.items);
+        }
+      } catch (error) {
+        console.error("Error fetching top artists:", error);
+      }
+    };
+    getMyTopArtists();
     getRecentlyPlayedSongs();
   }, []);
 
@@ -156,17 +271,18 @@ const ProfilePage = () => {
       </SectionWrapper>
 
       {/* Favorite Songs Section */}
-      <SectionWrapper title="Your Favourite Songs">
+      <SectionWrapper title="Your Recently Played Songs">
         <ScrollArea className="w-full whitespace-nowrap">
           <div className="flex gap-2.5 w-max mb-3">
-            {SongData.map((song, index) => (
-              <SongTile
-                albumArt={song.albumArt}
-                name={song.name}
-                artist={song.artist}
-                key={index}
-              />
-            ))}
+            {recentlyPlayed &&
+              recentlyPlayed.map((song, index) => (
+                <SongTile
+                  albumArt={song.track.album.images[0].url}
+                  name={song.track.name}
+                  artist={song.track.artists[0].name}
+                  key={index}
+                />
+              ))}
           </div>
           <ScrollBar orientation="horizontal" className="opacity-30" />
         </ScrollArea>
@@ -176,10 +292,11 @@ const ProfilePage = () => {
       <SectionWrapper title="Your Top Artists">
         <ScrollArea className="w-full whitespace-nowrap">
           <div className="flex gap-2 w-max mb-3">
-            {SingerData.map((singer, index) => (
+            {myTopArtists?.map((singer, index) => (
               <ArtistTile
-                artistImage={singer.artistImage}
-                artistName={singer.artistName}
+                artistImage={singer.images[0].url}
+                artistName={singer.name}
+                genres={singer.genres[0]}
                 key={index}
               />
             ))}

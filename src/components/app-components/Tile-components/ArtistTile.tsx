@@ -4,6 +4,7 @@ import React from "react";
 type ArtistTileProps = {
   artistName: string;
   artistImage: string;
+  genres?: string;
   classname?: string;
 };
 function ArtistTile(artistData: ArtistTileProps) {
@@ -20,7 +21,7 @@ function ArtistTile(artistData: ArtistTileProps) {
       </div>
       <div className="flex flex-col justify-center items-center">
         <h1>{artistData.artistName}</h1>{" "}
-        <h2 className="text-sm text-gray-300 mt-1">Pop</h2>
+        <h2 className="text-sm text-gray-300 mt-1">{artistData.genres}</h2>
       </div>
     </div>
   );

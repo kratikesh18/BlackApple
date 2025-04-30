@@ -9,6 +9,8 @@ const scopes = [
   "user-read-private",
   "user-read-email",
   "user-read-recently-played",
+  "user-top-read",
+  "playlist-read-private",
 ].join(" ");
 
 //accesstoken refreshment accesstokne is valid for 1 hour and refresh token is valid for 6 months
