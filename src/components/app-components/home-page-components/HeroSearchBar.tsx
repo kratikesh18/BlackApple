@@ -27,7 +27,7 @@ export const HeroSearchBar = () => {
         type="text"
         onChange={(e) => handleInputChange(e.target.value)}
         placeholder="Search for Lyrics "
-        className="text-lg py-5 font-semibold  rounded-md bg-gray-200/10 border border-white/20 text-white   md:text-2xl placeholder:text-gray-300/90"
+        className="text-lg py-5 font-semibold  rounded-md bg-gray-200/10 border border-white/20 text-white  md:text-2xl placeholder:text-gray-300/90"
       />
 
       {loading && <div className="loader"></div>}

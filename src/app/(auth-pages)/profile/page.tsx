@@ -7,8 +7,9 @@ import SongTile from "@/components/app-components/Tile-components/SongTile";
 import { useMySession } from "@/context/MySessionContext";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
+import axios from "axios";
 
 const ProfilePage = () => {
   const { session, status } = useMySession();
@@ -110,6 +111,40 @@ const ProfilePage = () => {
     },
   ];
 
+
+  const [recentlyPlayed, setRecentlyPlayed] = React.useState<any>([]);
+  useEffect(() => {
+    const getRecentlyPlayedSongs = async () => {
+      try {
+        const response = await axios.get(
+          "https://api.spotify.com/v1/me/player/recently-played",
+          {
+            headers: {
+              Authorization: `Bearer ${session?.accessToken}`,
+            },
+          }
+        );
+        if (response.status === 200 && response.data) {
+          ({
+            album: {
+              name: response.data.item.album.name,
+              artists: response.data.item.album.artists.map((artist: any) => ({
+                name: artist.name,
+              })),
+              images: response.data.item.album.images,
+            },
+            artists: response.data.item.artists.map((artist: any) => ({
+              name: artist.name,
+            })),
+            name: response.data.item.name,
+          });
+      } catch (error) {
+        console.error("Error fetching recently played songs:", error);
+      }
+    };
+    getRecentlyPlayedSongs();
+  }, []);
+
   return (
     <div className=" flex gap-3 flex-col">
       {/* Header Section */}
@@ -125,13 +160,12 @@ const ProfilePage = () => {
         <ScrollArea className="w-full whitespace-nowrap">
           <div className="flex gap-2.5 w-max mb-3">
             {SongData.map((song, index) => (
-              <Link href={"/lyrics/#"} key={index}>
-                <SongTile
-                  albumArt={song.albumArt}
-                  name={song.name}
-                  artist={song.artist}
-                />
-              </Link>
+              <SongTile
+                albumArt={song.albumArt}
+                name={song.name}
+                artist={song.artist}
+                key={index}
+              />
             ))}
           </div>
           <ScrollBar orientation="horizontal" className="opacity-30" />
@@ -143,13 +177,11 @@ const ProfilePage = () => {
         <ScrollArea className="w-full whitespace-nowrap">
           <div className="flex gap-2 w-max mb-3">
             {SingerData.map((singer, index) => (
-              <Link href={"/artist/#"} key={index}>
-                <ArtistTile
-                 
-                  artistImage={singer.artistImage}
-                  artistName={singer.artistName}
-                />
-              </Link>
+              <ArtistTile
+                artistImage={singer.artistImage}
+                artistName={singer.artistName}
+                key={index}
+              />
             ))}
           </div>
           <ScrollBar orientation="horizontal" className="opacity-30" />
@@ -160,13 +192,12 @@ const ProfilePage = () => {
         <ScrollArea className="w-full whitespace-nowrap">
           <div className="flex gap-2 w-max mb-3">
             {SongData.map((songs, index) => (
-              <Link href={"/lyrics/#"} key={index}>
-                <SongTile
-                  albumArt={songs.albumArt}
-                  name={songs.name}
-                  artist={songs.artist}
-                />
-              </Link>
+              <SongTile
+                albumArt={songs.albumArt}
+                name={songs.name}
+                artist={songs.artist}
+                key={index}
+              />
             ))}
           </div>
           <ScrollBar orientation="horizontal" className="opacity-30" />

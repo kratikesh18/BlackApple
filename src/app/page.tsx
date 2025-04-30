@@ -11,7 +11,7 @@ export default function Home() {
 
   return (
     <SectionWrapper>
-      <div className="text-white h-[86vh]  flex flex-col justify-between">
+      <div className="text-white h-[86vh] flex flex-col justify-between">
         {/* Tab Navigation */}
         <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
 

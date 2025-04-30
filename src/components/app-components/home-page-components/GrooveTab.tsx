@@ -15,7 +15,7 @@ const tempGrooveData = [
     _id: "66853d5743da48e5e78da1e9",
   },
   {
-    line: "fir bhi hain sir yeh din",
+    line: "fir bhi hain sard yeh din",
     startTime: 11,
     endTime: 15,
     _id: "66853d5743da48e5e78da1ea",
@@ -267,7 +267,7 @@ function GrooveTab() {
 
   return (
     <div
-      className="flex flex-col gap-2 overflow-scroll scrollbar-none my-2 "
+      className="flex w-full flex-col gap-2 overflow-scroll scrollbar-none my-2 "
       ref={lyricsContainerRef}
     >
       {tempGrooveData.map((item, index) => (

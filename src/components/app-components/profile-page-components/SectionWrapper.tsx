@@ -14,7 +14,7 @@ function SectionWrapper({
       className={` ${
         className
           ? className
-          : "bg-gray-200/10  backdrop-blur-2xl bg-opacity-10 border border-white/20 px-5 rounded-lg py-3"
+          : "bg-gray-200/10  backdrop-blur-2xl bg-opacity-10 border border-white/20 px-5 rounded-lg py-3 "
       }`}
     >
       {title && (

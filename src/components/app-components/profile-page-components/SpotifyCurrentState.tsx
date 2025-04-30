@@ -493,24 +493,26 @@ const tempData = {
   is_playing: true,
 };
 
+const tempTrack = {
+  album: {
+    name: "Shehron Ke Raaz",
+    artists: [{ name: "Prateek Kuhad" }],
+    images: [
+      {
+        url: "https://c.saavncdn.com/178/Shehron-Ke-Raaz-English-2021-20210622130715-500x500.jpg",
+      },
+    ],
+  },
+  artists: [{ name: "Prateek Kuhad" }],
+  name: "Tere Hi Hum",
+};
+
 function SpotifyCurrentState() {
   const [isAvailable, setIsAvailable] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [track, setTrack] = useState<TrackType>({
-    album: {
-      name: "Shehron Ke Raaz",
-      artists: [{ name: "Prateek Kuhad" }],
-      images: [
-        {
-          url: "https://c.saavncdn.com/178/Shehron-Ke-Raaz-English-2021-20210622130715-500x500.jpg",
-        },
-      ],
-    },
-    artists: [{ name: "Prateek Kuhad" }],
-    name: "Tere Hi Hum",
-  });
+  const [track, setTrack] = useState<TrackType>(tempTrack);
 
   const { session } = useMySession();
 
@@ -521,11 +523,8 @@ function SpotifyCurrentState() {
 
     const getCurrentPlayingTrack = async () => {
       setLoading(true);
-      // setTimeout(() => {
-      //   console.log("hello");
-      //   setLoading(false);
-      // }, 100000);
       setError("");
+      
 
       try {
         const response = await axios.get(
@@ -580,7 +579,7 @@ function SpotifyCurrentState() {
       }
     };
 
-    // getCurrentPlayingTrack();
+    getCurrentPlayingTrack();
   }, [session]);
 
   if (loading) {
@@ -603,12 +602,17 @@ function SpotifyCurrentState() {
           {track.name}
         </h1>
         <h2 className="text-sm text-gray-300 truncate">
-          {track.artists.map((artist) => artist.name).join(", ")}
+          {track.artists.map((artist, index) => (
+            <Link href={`/artist/${artist.name}`} key={index}>
+              {artist.name}
+              {", "}
+            </Link>
+          ))}
         </h2>
         <h2 className="text-sm text-gray-300 truncate">{track.album.name}</h2>
 
         <Link
-          href={`/lyrics/#`}
+          href={`/lyrics/${track.name}`}
           className="mt-2 inline-block w-fit bg-purple-700 hover:bg-purple-800 text-white text-sm md:font-medium px-4 py-2 rounded-lg transition-colors duration-200"
         >
           Show Lyrics
