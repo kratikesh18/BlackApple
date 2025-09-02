@@ -2,6 +2,7 @@ import SpotifyStateSkeleton from "@/components/extra-components/SpotifyStateSkel
 import { useMySession } from "@/context/MySessionContext";
 import axios, { AxiosError } from "axios";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
 type TrackType = {
@@ -516,6 +517,7 @@ function SpotifyCurrentState() {
 
   const { session } = useMySession();
 
+  const pathname = usePathname();
   // logic for fetching the current playing track
   useEffect(() => {
     // if (hasFetched.current) return; // Prevent multiple fetches
@@ -524,7 +526,6 @@ function SpotifyCurrentState() {
     const getCurrentPlayingTrack = async () => {
       setLoading(true);
       setError("");
-      
 
       try {
         const response = await axios.get(
@@ -535,6 +536,7 @@ function SpotifyCurrentState() {
             },
           }
         );
+        // const responsetwo = await axios.get("/api/getCurrentlyPlayingSong");
 
         if (response.status === 204) {
           setError("No track is currently playing on Spotify.");
@@ -610,13 +612,15 @@ function SpotifyCurrentState() {
           ))}
         </h2>
         <h2 className="text-sm text-gray-300 truncate">{track.album.name}</h2>
-
-        <Link
-          href={`/lyrics/${track.name}`}
-          className="mt-2 inline-block w-fit bg-purple-700 hover:bg-purple-800 text-white text-sm md:font-medium px-4 py-2 rounded-lg transition-colors duration-200"
-        >
-          Show Lyrics
-        </Link>
+        {pathname !== "/contribute/edit" && (
+          // <div></div>
+          <Link
+            href={`/lyrics/${track.name}`}
+            className="mt-2 inline-block w-fit bg-purple-700 hover:bg-purple-800 text-white text-sm md:font-medium px-4 py-2 rounded-lg transition-colors duration-200"
+          >
+            Show Lyrics
+          </Link>
+        )}
       </div>
 
       {/* Right Side - Album Art */}

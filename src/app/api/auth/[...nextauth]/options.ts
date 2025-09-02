@@ -116,6 +116,8 @@ export const authOptions: NextAuthOptions = {
     },
 
     //this is the function which is called when the user is authenticated and the session is created
+
+    //THE GREATEST ADDTION IS NEVER SENT SENSITIVE DATA LIKE ACCESSTOKEN AND REFRESHTOKEN TO THE SESSION OBJECT, BECAUSET THE JWT IS HTTP-ONLY AND IT STORES THE CREDENTIALS VERY SECURELY IN CLIENT SIDE WHERE THE CLIENT CANNOT READ DIRECTLY THE CREDENTIALS, INSTEAD CLIENT CAN ACCESS ONLY THE SESSION WHICH MUST BE CONTAINING NON SENSITIVE DATA
     async session({ session, token }) {
       // console.log("Session Callback - Token:", token);
       // console.log("Session Callback - Session:", session);

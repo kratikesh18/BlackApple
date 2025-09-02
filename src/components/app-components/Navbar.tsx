@@ -23,7 +23,7 @@ const Navbar = () => {
       {/* add icon */}
       <div>
         <Link
-          href={"/contribute,"}
+          href={"/contribute"}
           title="Contribute"
           className="hover:opacity-75 transition-opacity cursor-pointer"
         >

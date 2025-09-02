@@ -15,3 +15,23 @@ export interface MyTopArtistsResponse {
   followers: { total: number };
   popularity: number;
 }
+
+export interface TrackQueryResponse {
+  album: {
+    images: { url: string }[];
+  };
+  artists: { name: string }[];
+  name: string;
+}
+
+export interface ArtistQueryResponse {
+  genre: string[];
+  images: { url: string }[];
+  name: string;
+}
+
+export interface AlbumQueryResponse {
+  images: { url: string }[];
+  name: string;
+  release_date: string;
+}

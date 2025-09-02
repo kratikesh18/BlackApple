@@ -10,7 +10,7 @@ type ArtistTileProps = {
 function ArtistTile(artistData: ArtistTileProps) {
   return (
     <div
-      className={`w-fit p-2 mx-auto border border-white/20 text-white rounded-sm shadow-lg overflow-hidden ${artistData.classname}`}
+      className={`w-36 p-2 mx-auto border border-white/20 text-white rounded-sm shadow-lg overflow-hidden ${artistData.classname}`}
     >
       <div className="">
         <img

@@ -1,6 +1,8 @@
 import EditIcon from "@/components/icons/EditIcon";
+import axios from "axios";
 import Link from "next/link";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+
 const tempGrooveData = [
   {
     line: "kaise badalte kaise guzarte din",
@@ -244,6 +246,12 @@ function GrooveTab() {
   }, [currentTime]);
 
   useEffect(() => {
+    async function getData() {
+      const response = await axios.get("/api/getCurrentlyPlayingSong");
+    }
+    getData();
+  }, []);
+  useEffect(() => {
     const interval = setInterval(
       () => setCurrentTime((prev) => prev + 1),
       1000
@@ -292,7 +300,7 @@ function GrooveTab() {
         </div>
       ))}
       <Link
-        href={"/contribute/hex"}
+        href="/contribute/edit"
         className="fixed bottom-44 right-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold p-3 rounded-full shadow-lg transition"
       >
         <EditIcon />
