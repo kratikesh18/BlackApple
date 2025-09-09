@@ -49,7 +49,6 @@ const LyricsSchema: Schema<Lyrics> = new Schema(
       required: true,
     },
     
-   
     lyricsText: {
       type: [LyricsLineSchema],
       required: false,
