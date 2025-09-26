@@ -233,75 +233,84 @@ function GrooveTab() {
   const lyricsContainerRef = useRef<HTMLDivElement>(null);
   const currentLineRef = useRef<HTMLDivElement | null>(null);
 
+  // Scroll to the current line when it changes
   useEffect(() => {
     if (currentLineRef.current && lyricsContainerRef.current) {
-      lyricsContainerRef.current.scrollTo({
-        top:
-          currentLineRef.current.offsetTop -
-          lyricsContainerRef.current.offsetHeight / 2,
-        behavior: "smooth",
-      });
-      // console.log("scrolled");
+      const container = lyricsContainerRef.current;
+      const line = currentLineRef.current;
+      const scrollTo =
+        line.offsetTop - container.offsetHeight / 2 + line.offsetHeight / 2;
+      container.scrollTo({ top: scrollTo, behavior: "smooth" });
     }
   }, [currentTime]);
 
+  // Fetch currently playing song on mount (if needed)
   useEffect(() => {
-    async function getData() {
-      const response = await axios.get("/api/getCurrentlyPlayingSong");
-    }
-    getData();
+    axios.get("/api/getCurrentlyPlayingSong").catch(() => {});
   }, []);
-  useEffect(() => {
-    const interval = setInterval(
-      () => setCurrentTime((prev) => prev + 1),
-      1000
-    );
-    return () => clearInterval(interval);
-  });
 
+  // Simulate playback time
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Find the current line based on time
   const getCurrentLine = useCallback(() => {
-    const currentlineToSend = tempGrooveData.find(
+    return tempGrooveData.find(
       (line) => line.startTime <= currentTime && line.endTime >= currentTime
     );
-    // console.log(currentlineToSend);
-    return currentlineToSend;
   }, [currentTime]);
 
   const currentLine = getCurrentLine();
 
-  const setClickedLineToCurrent = (index: number) => {
+  // Set time to clicked line's start
+  const handleLineClick = (index: number) => {
     setCurrentTime(tempGrooveData[index].startTime);
+  };
+
+  // Format seconds as mm:ss
+  const formatTime = (seconds: number) => {
+    const min = Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, "0");
+    const sec = Math.floor(seconds % 60)
+      .toString()
+      .padStart(2, "0");
+    return `${min}:${sec}`;
   };
 
   return (
     <div
-      className="flex w-full flex-col gap-2 overflow-scroll scrollbar-none my-2 "
+      className="flex w-full flex-col gap-2 overflow-y-auto scrollbar-none my-2 max-h-[75vh] md:max-h-[80vh] px-1 md:px-3"
       ref={lyricsContainerRef}
     >
       {tempGrooveData.map((item, index) => (
         <div
           key={item._id}
-          // className="flex flex-col gap-1 p-2 rounded-md"
-          className={`cursor-pointer p-2 rounded-md transition  `}
+          className={`cursor-pointer p-2 rounded-md transition ${
+            currentLine === item
+              ? " text-white"
+              : "hover:bg-gray-700/40 text-gray-400/90"
+          }`}
           ref={currentLine === item ? currentLineRef : null}
-          onClick={() => setClickedLineToCurrent(index)}
+          onClick={() => handleLineClick(index)}
         >
-          <h1
-            className={` text-xl md:text-2xl font-medium  md:font-semibold ${
-              currentLine === item ? "text-white" : "text-gray-400/90"
-            }`}
-          >
+          <h1 className="text-xl md:text-2xl font-medium md:font-semibold ">
             {item.line}
           </h1>
           <div className="text-xs flex justify-between text-gray-400">
-            <p>{new Date(item.startTime * 1000).toISOString().substr(14, 5)}</p>
-            <p>{new Date(item.endTime * 1000).toISOString().substr(14, 5)}</p>
+            <p>{formatTime(item.startTime)}</p>
+            <p>{formatTime(item.endTime)}</p>
           </div>
         </div>
       ))}
       <Link
-        href="/contribute/edit"
-        className="fixed bottom-44 right-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold p-3 rounded-full shadow-lg transition"
+        href="/contribute/"
+        className="fixed bottom-24 right-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold p-3 rounded-full shadow-lg transition z-20"
+        aria-label="Edit Lyrics"
       >
         <EditIcon />
       </Link>

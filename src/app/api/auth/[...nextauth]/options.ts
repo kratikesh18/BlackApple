@@ -1,6 +1,9 @@
 import { NextAuthOptions } from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
 import axios from "axios";
+import { DBConnect } from "@/lib/dbconnect";
+import { User } from "@/models/user.model";
+import { Session } from "next-auth";
 
 // this is from spotify dev console
 const scopes = [
@@ -93,41 +96,120 @@ export const authOptions: NextAuthOptions = {
   //callback are for the customized behaviour for the authentication
 
   callbacks: {
-    //jwt is called when the token is getting created or at the time of login
-    async jwt({ account, token }) {
-      // console.log("JWT Callback - Account:", account);
-      // console.log("JWT Callback - Token:", token);
+    async signIn({ account, profile }) {
+      if (account?.provider === "spotify" && profile) {
+        try {
+          await DBConnect();
 
-      const now = Date.now();
-      //if the token is expired then refresh the token
-      if (token.expiresAt && token.expiresAt < now) {
-        console.log("Token expired, refreshing access token...");
-        return await refreshAccessToken(token);
+          const spotifyProfile = profile as {
+            id: string;
+            display_name?: string;
+            email?: string;
+          };
+
+          if (!spotifyProfile.email) {
+            console.error("Spotify did not return an email.");
+            return false; // block sign-in if no email
+          }
+
+          let user = await User.findOne({ spotifyId: spotifyProfile.id });
+
+          if (!user) {
+            // Create new user
+            user = new User({
+              username: spotifyProfile.display_name || "Unknown User",
+              email: spotifyProfile.email,
+              spotifyId: spotifyProfile.id,
+            });
+            await user.save();
+            console.log("✅ New user created:", user._id);
+          } else {
+            // Update safe fields if needed (not tokens, handled by JWT)
+            if (user.email !== spotifyProfile.email) {
+              user.email = spotifyProfile.email;
+            }
+            if (user.username !== spotifyProfile.display_name) {
+              user.username = spotifyProfile.display_name || user.username;
+            }
+            await user.save();
+            console.log("🔄 Existing user updated:", user._id);
+          }
+        } catch (error) {
+          console.error("❌ Error in signIn callback:", error);
+          return false; // block sign-in on error
+        }
       }
+
+      return true; // allow sign in
+    },
+
+    //jwt is called when the token is getting created or at the time of login
+    // async jwt({ account, token }) {
+    //   const now = Date.now();
+    //   //if the token is expired then refresh the token
+    //   if (token.expiresAt && token.expiresAt < now) {
+    //     console.log("Token expired, refreshing access token...");
+    //     return await refreshAccessToken(token);
+    //   }
+    //   if (account) {
+    //     //extractin from the account object
+    //     const { access_token, expires_at, refresh_token } = account;
+    //     //putting the values in the token object
+    //     token.accessToken = access_token;
+    //     token.refreshToken = refresh_token;
+    //     token.expiresAt = expires_at;
+    //   }
+    //   return token;
+    // },
+
+    async jwt({ token, account, user }) {
+      // Initial sign-in
       if (account) {
-        //extractin from the account object
-        const { access_token, expires_at, refresh_token } = account;
-        //putting the values in the token object
-        token.accessToken = access_token;
-        token.refreshToken = refresh_token;
-        token.expiresAt = expires_at;
+        return {
+          accessToken: account.access_token,
+          refreshToken: account.refresh_token,
+          expiresAt: account.expires_at
+            ? account.expires_at * 1000
+            : Date.now() + 3600 * 1000, // convert sec → ms
+          user, // minimal safe user info (from DB or provider)
+        };
       }
-      return token;
+
+      // Return previous token if still valid
+      if (Date.now() < (token.expiresAt as number)) {
+        return token;
+      }
+
+      // Access token expired → refresh
+      return await refreshAccessToken(token);
     },
 
     //this is the function which is called when the user is authenticated and the session is created
 
     //THE GREATEST ADDTION IS NEVER SENT SENSITIVE DATA LIKE ACCESSTOKEN AND REFRESHTOKEN TO THE SESSION OBJECT, BECAUSET THE JWT IS HTTP-ONLY AND IT STORES THE CREDENTIALS VERY SECURELY IN CLIENT SIDE WHERE THE CLIENT CANNOT READ DIRECTLY THE CREDENTIALS, INSTEAD CLIENT CAN ACCESS ONLY THE SESSION WHICH MUST BE CONTAINING NON SENSITIVE DATA
+    // async session({ session, token }) {
+    //   // console.log("Session Callback - Token:", token);
+    //   // console.log("Session Callback - Session:", session);
+    //   //putting the values in the session object
+    //   session.accessToken = token.accessToken;
+    //   session.refreshToken = token.refreshToken;
+    //   session.expiresAt = token.expiresAt;
+
+    //   if (token.error) {
+    //     session.error = token.error.toString(); // Convert error to string if it's an object
+    //   }
+
+    //   return session;
+    // },
+
     async session({ session, token }) {
-      // console.log("Session Callback - Token:", token);
-      // console.log("Session Callback - Session:", session);
-      //putting the values in the session object
-      session.accessToken = token.accessToken;
-      session.refreshToken = token.refreshToken;
-      session.expiresAt = token.expiresAt;
+      // Never expose refreshToken
+      session.user = token.user as Session["user"];
+      session.accessToken = token.accessToken as string;
+      session.expiresAt = token.expiresAt as number;
 
       if (token.error) {
-        session.error = token.error.toString(); // Convert error to string if it's an object
+        session.error = String(token.error);
       }
 
       return session;

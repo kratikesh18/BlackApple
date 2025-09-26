@@ -7,7 +7,7 @@ const Logo = () => {
       href="/"
       className="hover:text-gray-300 transition-colors font-extrabold tracking-wider"
     >
-      <h1 className="theme-text-style text-lg md:text-2xl">blueCocain</h1>
+      <h1 className="theme-text-style text-lg md:text-2xl">blackApple</h1>
     </Link>
   );
 };

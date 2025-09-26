@@ -13,6 +13,7 @@ declare module "next-auth" {
   interface User {
     name: string;
     email: string;
+    image: string;
   }
 }
 
@@ -20,11 +21,13 @@ declare module "next-auth/jwt" {
   interface JWT {
     _id?: string;
     username?: string;
+    email?: string;
     isVerified?: boolean;
     userType?: string;
     image?: string;
     accessToken?: string;
     refreshToken?: string;
     expiresAt?: number;
+    error?: string;
   }
 }

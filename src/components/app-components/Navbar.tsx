@@ -12,9 +12,17 @@ import { useMySession } from "@/context/MySessionContext";
 import HomeIcon from "../icons/HomeIcon";
 import LogoutIcon from "../icons/LogoutIcon";
 import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { set } from "lodash";
 
-const Navbar = () => {
-  const { session, status, signOut } = useMySession();
+const Navbar = ({
+  searchBarOpen,
+  setSearchBarOpen,
+}: {
+  searchBarOpen?: boolean;
+  setSearchBarOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const { status, signOut } = useMySession();
 
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -39,6 +47,14 @@ const Navbar = () => {
       {/* user actions  */}
 
       <div className="flex justify-center items-center gap-4 cursor-pointer">
+        {setSearchBarOpen && searchBarOpen !== undefined && (
+          <Button
+            variant="ghost"
+            onClick={() => setSearchBarOpen(!searchBarOpen)}
+          >
+            <SearchIcon />
+          </Button>
+        )}
         {
           <Popover>
             <PopoverTrigger title="Search">

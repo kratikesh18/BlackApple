@@ -1,27 +1,27 @@
 import React from "react";
 
-function SectionWrapper({
-  children,
-  title,
-  className,
-}: {
+interface SectionWrapperProps {
   children: React.ReactNode;
   title?: string;
   className?: string;
-}) {
+}
+
+function SectionWrapper({ children, title, className }: SectionWrapperProps) {
   return (
-    <div
-      className={` ${
+    <section
+      className={
         className
           ? className
-          : "bg-gray-200/10  backdrop-blur-2xl bg-opacity-10 border border-white/20 px-5 rounded-lg py-3 "
-      }`}
+          : "bg-gray-200/10 backdrop-blur-2xl bg-opacity-10 border border-white/20 px-3 md:px-5 rounded-lg py-3 md:py-5 w-full"
+      }
     >
       {title && (
-        <h1 className="text-xl text-white font-bold mb-3 md:mb-0">{title}</h1>
+        <h1 className="text-lg md:text-xl text-white font-bold mb-2 md:mb-3">
+          {title}
+        </h1>
       )}
-      <div className="my-2">{children}</div>
-    </div>
+      <div className="my-1 md:my-2">{children}</div>
+    </section>
   );
 }
 

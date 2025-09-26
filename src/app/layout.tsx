@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "blueCocain : A Lyrics Libarary",
+  title: "blackApple : A Lyrics Libarary",
   description:
     "A free lyrics library where you can find lyrics of all songs, made by an Indian developer.",
   authors: [{ name: "Kartikesh Pachkawade" }],

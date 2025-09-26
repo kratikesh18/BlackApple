@@ -1,36 +1,35 @@
 import { Button } from "@/components/ui/button";
 import React from "react";
 
-function TabNavigation({
-  activeTab,
-  setActiveTab,
-}: {
-  activeTab: "Groove" | "Explore";
-  setActiveTab: (tab: "Groove" | "Explore") => void;
-}) {
+type Tab = "Groove" | "Explore";
+
+interface TabNavigationProps {
+  activeTab: Tab;
+  setActiveTab: (tab: Tab) => void;
+}
+
+const tabs: Tab[] = ["Groove", "Explore"];
+
+function TabNavigation({ activeTab, setActiveTab }: TabNavigationProps) {
   return (
-    <div className="flex justify-center items-center gap-4">
-      <Button
-        onClick={() => setActiveTab("Groove")}
-        className={`px-4 py-2 rounded-lg font-semibold ${
-          activeTab === "Groove"
-            ? "bg-purple-700 text-white"
-            : "bg-gray-700 text-gray-300"
-        }`}
-      >
-        Groove
-      </Button>
-      <Button
-        onClick={() => setActiveTab("Explore")}
-        className={`px-4 py-2 rounded-lg font-semibold ${
-          activeTab === "Explore"
-            ? "bg-purple-700 text-white"
-            : "bg-gray-700 text-gray-300"
-        }`}
-      >
-        Explore
-      </Button>
-    </div>
+    <nav className="flex justify-center items-center gap-2 sm:gap-4 w-full py-2">
+      {tabs.map((tab) => (
+        <Button
+          key={tab}
+          onClick={() => setActiveTab(tab)}
+          className={`w-28 sm:w-32 px-3 py-2 rounded-lg font-semibold transition-colors duration-150
+            ${
+              activeTab === tab
+                ? "bg-purple-700 text-white "
+                : "bg-gray-800 text-gray-300 hover:bg-purple-800/80 hover:text-white"
+            }
+          `}
+          aria-current={activeTab === tab ? "page" : undefined}
+        >
+          {tab}
+        </Button>
+      ))}
+    </nav>
   );
 }
 

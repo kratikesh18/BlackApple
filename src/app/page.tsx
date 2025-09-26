@@ -16,10 +16,14 @@ export default function Home() {
         <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
         {/* Content Sections */}
-       
-          {activeTab === "Explore" && <ExploreTab />}
-          {activeTab === "Groove" && <GrooveTab />}
-    
+
+        {activeTab === "Groove" && <GrooveTab />}
+        {/* {activeTab === "Explore" && <ExploreTab />} */}
+        {activeTab === "Explore" && (
+          <div className="flex justify-center items-center h-full w-full">
+            <h1 className="text-3xl font-bold">Comming Soon</h1>
+          </div>
+        )}
 
         {/* Spotify Current State */}
         <SectionWrapper className="bg-gray-200/10 backdrop-blur-2xl bg-opacity-10 border border-white/20 px-3 rounded-lg ">

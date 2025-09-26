@@ -1,5 +1,6 @@
 import SpotifyStateSkeleton from "@/components/extra-components/SpotifyStateSkeleton";
 import { useMySession } from "@/context/MySessionContext";
+import { useSpotifyService } from "@/hooks/useSpotifyService";
 import axios, { AxiosError } from "axios";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -509,6 +510,21 @@ const tempTrack = {
 };
 
 function SpotifyCurrentState() {
+  const { getCurrentlyPlaying } = useSpotifyService();
+  useEffect(() => {
+    async function fetc() {
+      try {
+        const track = await getCurrentlyPlaying();
+        // setTrack(track);
+        console.log(track);
+      } catch (error: any) {
+        console.log(error.message);
+      }
+    }
+    fetc();
+  }, []);
+
+
   const [isAvailable, setIsAvailable] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -582,7 +598,7 @@ function SpotifyCurrentState() {
     };
 
     getCurrentPlayingTrack();
-  }, [session]);
+  }, []);
 
   if (loading) {
     return <SpotifyStateSkeleton />;
