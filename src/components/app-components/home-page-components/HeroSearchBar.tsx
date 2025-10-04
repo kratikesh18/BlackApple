@@ -10,7 +10,10 @@ import {
 import SongTile from "../Tile-components/SongTile";
 
 export const HeroSearchBar = () => {
+
+
   const { session, status } = useMySession();
+  
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const handleInputChange = debounce((query: string) => {

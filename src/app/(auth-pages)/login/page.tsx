@@ -5,7 +5,7 @@ import LeftArrow from "@/components/icons/LeftArrow";
 import { useMySession } from "@/context/MySessionContext";
 
 const LoginPage: React.FC = () => {
-  const { session, status, signIn } = useMySession();
+  const { status, signIn } = useMySession();
 
   const handleSpotifyLogin = async () => {
     try {

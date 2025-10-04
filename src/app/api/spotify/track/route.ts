@@ -2,17 +2,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/options";
 import { NextRequest, NextResponse } from "next/server";
 import { ApiError } from "next/dist/server/api-utils";
+import { TrackType } from "@/types/responseTypes";
 
-type TrackType = {
-  album: {
-    name: string;
-    artists: { name: string }[];
-    images: { url: string }[];
-  };
-  artists: { name: string }[];
-  name: string;
-  global_id: string;
-};
 
 const filterData = (data: any): TrackType => {
   const filteredData: TrackType = {
@@ -32,8 +23,8 @@ const filterData = (data: any): TrackType => {
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
 
-  if (!session) {
-    throw new ApiError(400, "unauthenticated");
+  if (!session || !session.accessToken) {
+    throw new ApiError(400, "unauthenticated or missing access token");
   }
 
   try {
@@ -50,7 +41,22 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ isPlaying: false });
     }
 
-    const data = await response.json();
+    let data: any = null;
+    if (response.ok) {
+      try {
+        data = await response.json();
+      } catch (err) {
+        return NextResponse.json(
+          { error: "Invalid JSON response from Spotify" },
+          { status: 502 }
+        );
+      }
+    } else {
+      return NextResponse.json(
+        { error: `Spotify API error: ${response.status}` },
+        { status: response.status }
+      );
+    }
 
     // 🔹 Transform Spotify's response → TrackType
 

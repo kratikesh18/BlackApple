@@ -4,7 +4,7 @@ import LibraryIcon from "../icons/LibraryIcon";
 import SearchIcon from "../icons/SearchIcon";
 import UserIcon from "../icons/UserIcon";
 import AddIcon from "../icons/AddIcon";
-import Logo from "../Logo";
+import Logo from "../extra-components/Logo";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";

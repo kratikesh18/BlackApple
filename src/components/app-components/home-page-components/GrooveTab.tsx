@@ -229,6 +229,9 @@ const tempGrooveData = [
 ];
 
 function GrooveTab() {
+
+
+
   const [currentTime, setCurrentTime] = useState<number>(0);
   const lyricsContainerRef = useRef<HTMLDivElement>(null);
   const currentLineRef = useRef<HTMLDivElement | null>(null);
@@ -245,9 +248,9 @@ function GrooveTab() {
   }, [currentTime]);
 
   // Fetch currently playing song on mount (if needed)
-  useEffect(() => {
-    axios.get("/api/getCurrentlyPlayingSong").catch(() => {});
-  }, []);
+  // useEffect(() => {
+  //   axios.get("/api/getCurrentlyPlayingSong").catch(() => {});
+  // }, []);
 
   // Simulate playback time
   useEffect(() => {
@@ -307,13 +310,7 @@ function GrooveTab() {
           </div>
         </div>
       ))}
-      <Link
-        href="/contribute/"
-        className="fixed bottom-24 right-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold p-3 rounded-full shadow-lg transition z-20"
-        aria-label="Edit Lyrics"
-      >
-        <EditIcon />
-      </Link>
+
     </div>
   );
 }

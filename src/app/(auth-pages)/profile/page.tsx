@@ -8,7 +8,7 @@ import { useMySession } from "@/context/MySessionContext";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 import React, { useEffect } from "react";
-import Link from "next/link";
+// import Link from "next/link";
 import axios from "axios";
 import {
   MyTopArtistsResponse,

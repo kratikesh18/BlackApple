@@ -1,19 +1,19 @@
 import mongoose, { Schema, Types, Document } from "mongoose";
 
 // Define the LyricsLine interface
-export interface LyricsLine{
+export interface LyricsLine {
   line: string;
-  startTime: number; // Start time in seconds
-  endTime: number; // End time in seconds
+  startTime: number;
+  endTime: number;
 }
 
 // Define the Lyrics interface
 export interface Lyrics extends Document {
-  spotifyId: string;
+  global_id: string;
+  lyricsText: LyricsLine[];
   contributedBy: Types.ObjectId[];
   readyToPulish: boolean;
   keywords: string[];
-  lyricsText?: LyricsLine[];
 }
 
 // Create the LyricsLine schema
@@ -26,33 +26,33 @@ const LyricsLineSchema: Schema<LyricsLine> = new Schema({
   startTime: {
     type: Number,
     required: true,
-    default: 0, // Default to 0, will be updated in pre-save hook
+    default: 0,
   },
   endTime: {
     type: Number,
     required: true,
-    default: 5, // Default to 5, will be updated in pre-save hook
+    default: 5,
   },
 });
 
 // Create the Lyrics schema
 const LyricsSchema: Schema<Lyrics> = new Schema(
   {
-   
-    spotifyId:{
-        type:String,
-        required:true,
+    global_id: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
+    lyricsText: {
+      type: [LyricsLineSchema],
+      required: true,
+      default: [],
     },
     contributedBy: {
       type: [Schema.Types.ObjectId],
       ref: "User",
-      required: true,
-    },
-    
-    lyricsText: {
-      type: [LyricsLineSchema],
       required: false,
-      default: [],
     },
     keywords: {
       type: [String],
@@ -69,7 +69,7 @@ const LyricsSchema: Schema<Lyrics> = new Schema(
   }
 );
 
-// Pre-save hook to set startTime and endTime
+//before saving the lyrics, we can auto-generate timestamps for each line if not provided
 LyricsSchema.pre("save", function (next) {
   const lyrics = this as Lyrics;
   if (lyrics.lyricsText && lyrics.lyricsText.length > 0) {
@@ -78,8 +78,8 @@ LyricsSchema.pre("save", function (next) {
     lyrics.lyricsText.forEach((line, index) => {
       line.startTime = startTime;
       line.endTime = endTime;
-      startTime = endTime + 1; // Increment the start time for the next line
-      endTime = startTime + 4; // Increment the end time for the next line
+      startTime = endTime + 1;
+      endTime = startTime + 4;
     });
   }
   next();

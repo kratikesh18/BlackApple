@@ -1,8 +1,10 @@
 "use client";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import LoadingSpinner from "@/components/extra-components/LoadingSpinner";
 import { signIn, signOut, useSession } from "next-auth/react";
 import React from "react";
 import { MySessionContext } from "./MySessionContext";
+import { Provider } from "react-redux";
+import { store } from "@/store/store";
 
 function SessionLayout({ children }: { children: React.ReactNode }) {
   //calling only once in the session layout
@@ -14,7 +16,7 @@ function SessionLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <MySessionContext.Provider value={{ session, status, signIn, signOut }}>
-      {children}
+      <Provider store={store}>{children}</Provider>
     </MySessionContext.Provider>
   );
 }

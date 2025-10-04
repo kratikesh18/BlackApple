@@ -4,10 +4,64 @@ import GrooveTab from "@/components/app-components/home-page-components/GrooveTa
 import TabNavigation from "@/components/app-components/home-page-components/TabNavigation";
 import SectionWrapper from "@/components/app-components/profile-page-components/SectionWrapper";
 import SpotifyCurrentState from "@/components/app-components/profile-page-components/SpotifyCurrentState";
-import React, { useState } from "react";
+import { useLyricsService } from "@/hooks/useLyricsService";
+import { useSpotifyService } from "@/hooks/useSpotifyService";
+import { RootState } from "@/store/store";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<"Groove" | "Explore">("Groove");
+
+  const { getCurrentlyPlaying, checkLyricsAvailability } = useSpotifyService();
+  const { getLyricsForCurrentTrack } = useLyricsService();
+
+  const { currentTrack } = useSelector(
+    (state: RootState) => state.currentTrack
+  );
+
+  useEffect(() => {
+    // document.title = "BlueCocain - Home";
+
+    const fetchData = async () => {
+      try {
+        const currentTrack = await getCurrentlyPlaying();
+        if (currentTrack) {
+          console.log("Fetched current track on home page:", currentTrack);
+        }
+      } catch (err) {
+        console.error("Error fetching current track:", err);
+      }
+    };
+
+    fetchData();
+    //  auto-refresh every 30 sec
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const fetchLyrics = async () => {
+      try {
+        if (currentTrack) {
+          const lyricsAvailable = await checkLyricsAvailability(
+            currentTrack.global_id
+          );
+
+          if (lyricsAvailable) {
+            const lyrics = await getLyricsForCurrentTrack(
+              currentTrack.global_id
+            );
+            console.log("Fetched lyrics:", lyrics);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching lyrics:", error);
+      }
+    };
+
+    fetchLyrics();
+  }, [checkLyricsAvailability, getLyricsForCurrentTrack]);
 
   return (
     <SectionWrapper>
@@ -27,7 +81,7 @@ export default function Home() {
 
         {/* Spotify Current State */}
         <SectionWrapper className="bg-gray-200/10 backdrop-blur-2xl bg-opacity-10 border border-white/20 px-3 rounded-lg ">
-          <SpotifyCurrentState />
+          <SpotifyCurrentState track={currentTrack} />
         </SectionWrapper>
       </div>
     </SectionWrapper>
