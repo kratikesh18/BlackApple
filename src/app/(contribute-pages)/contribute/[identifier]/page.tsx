@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ChartNoAxesColumnIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const ContributePage = () => {
@@ -42,17 +43,26 @@ const ContributePage = () => {
   });
 
   const saveLyrics = async (data: z.infer<typeof newLyricsSchema>) => {
-    console.log("Form data to submit:", data);
-    if (!currentTrack || !data) {
-      console.log("provide full data");
-      return;
-    }
-    const response = await api.post("/lyrics/contribute", {
-      rawString: data.rawText,
-      global_id: currentTrack?.global_id,
-    });
+    try {
+      console.log("Form data to submit:", data);
+      if (!currentTrack || !data) {
+        console.log("provide full data");
+        return;
+      }
+      const response = await api.post("/lyrics/contribute", {
+        rawString: data.rawText,
+        global_id: currentTrack?.global_id,
+      });
 
-    console.log("Lyrics submission response:", response);
+      // console.log("Lyrics submission response:", response);
+      if (response.status !== 200) {
+        throw new Error("Failed to submit lyrics");
+      }
+      toast.success("Lyrics submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting lyrics:", error);
+      toast.error("Failed to submit lyrics. Please try again.");
+    }
   };
 
   return (

@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
         success: false,
         error: "Internal Server Error",
       }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500,  headers: { "Content-Type": "application/json" } }
     );
   }
 }

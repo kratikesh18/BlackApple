@@ -7,6 +7,7 @@ import Navbar from "@/components/app-components/Navbar";
 import SessionLayout from "@/context/SessionLayout";
 import { Provider } from "react-redux";
 import { store } from "@/store/store";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,14 +39,13 @@ export default function RootLayout({
       >
         <AuthProvider>
           <SessionLayout>
-
-              <header className="p-3 ">
-                <Navbar />
-              </header>
-              <main className="flex-1 px-3 md:p-0 md:container overflow-y-auto scrollbar-none">
-                {children}
-              </main>
-
+            <header className="p-3 ">
+              <Navbar />
+            </header>
+            <main className="flex-1 px-3 md:p-0 md:container overflow-y-auto scrollbar-none">
+              {children}
+            </main>
+            <Toaster />
           </SessionLayout>
         </AuthProvider>
       </body>

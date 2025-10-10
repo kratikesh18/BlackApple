@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import api from "@/lib/api";
 import { TrackType } from "@/types/responseTypes";
 import { useDispatch } from "react-redux";
+import { Axios, AxiosAdapter, AxiosError, AxiosResponse } from "axios";
 
 type LyricsCheckResponse = {
   success: boolean;
@@ -12,33 +13,45 @@ type LyricsCheckResponse = {
 export const useSpotifyService = () => {
   const dispatch = useDispatch();
 
-  const getCurrentlyPlaying =
-    useCallback(async (): Promise<TrackType | null> => {
-      try {
-        const response = await api.get("/spotify/track");
-        dispatch({
-          type: "currentTrack/setCurrentTrack",
-          payload: response.data,
-        });
-        // console.log("Currently playing track data:", response.data);
-        return response.data;
-      } catch (error) {
-        console.error("Error fetching currently playing track:", error);
-        return null; // caller को safe fallback
-      }
-    }, []);
-
-  const checkLyricsAvailability = useCallback(
-    async (global_id: string): Promise<LyricsCheckResponse> => {
-      try {
-        const response = await api.post("/lyrics/check", { global_id });
-        return response.data;
-      } catch (error: any) {
-        console.error("Error checking lyrics availability:", error);
+  const getCurrentlyPlaying = useCallback(async (): Promise<
+    TrackType | any
+  > => {
+    try {
+      const response = await api.get("/spotify/track");
+      dispatch({
+        type: "currentTrack/setCurrentTrack",
+        payload: response.data,
+      });
+      // console.log("Currently playing track data:", response.data);
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
         return {
           success: false,
-          error: error?.message || "Failed to check lyrics",
+          error: error.response?.data.error,
         };
+      }
+      // console.error("Error fetching currently playing track:", error);
+      return null; // caller को safe fallback
+    }
+  }, []);
+
+  const checkLyricsAvailability = useCallback(
+    async (global_id: string): Promise<LyricsCheckResponse | any> => {
+      if (!global_id) {
+        return null;
+      }
+      try {
+        const response = await api.get(`/lyrics/check?gid=${global_id}`);
+        return response.data;
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          console.log("error is xios", error.response?.data.error);
+          return {
+            success: false,
+            error: error?.response?.data.error || "Failed to check lyrics",
+          };
+        }
       }
     },
     []
@@ -56,11 +69,13 @@ export const useSpotifyService = () => {
       console.log("Lyrics submission response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error submitting lyrics:", error);
-      return {
-        success: false,
-        error: (error as Error)?.message || "Failed to submit lyrics",
-      };
+      // console.error("Error submitting lyrics:", error);
+      if (error instanceof AxiosError) {
+        return {
+          success: false,
+          error: error.response?.data.error || "Failed to submit lyrics",
+        };
+      }
     }
   };
 

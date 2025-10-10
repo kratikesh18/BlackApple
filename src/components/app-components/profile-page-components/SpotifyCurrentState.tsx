@@ -89,7 +89,7 @@ function SpotifyCurrentState({ track }: { track: TrackType | null }) {
         </h2>
         <h2 className="text-sm text-gray-300 truncate">{track?.album?.name}</h2>
 
-        {pathname !== "/lyrics" && isLyricsAvailable ? (
+        {isLyricsAvailable ? (
           <Link
             href="/lyrics"
             className="mt-2 inline-block px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition"
@@ -98,7 +98,7 @@ function SpotifyCurrentState({ track }: { track: TrackType | null }) {
           </Link>
         ) : (
           <div>
-            {pathname !== "/lyrics" && (
+            {!isLyricsAvailable && (
               <p className="mt-2 text-sm text-gray-500">
                 Lyrics not available for this track.
               </p>

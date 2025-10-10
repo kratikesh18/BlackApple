@@ -2,12 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import LyricsModel from "@/models/lyrics.model";
 import { DBConnect } from "@/lib/dbconnect";
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     await DBConnect();
 
-    const body = await req.json();
-    const { global_id } = body;
+    // const body = await req.json();
+    const { searchParams } = new URL(req.url);
+
+    const global_id = searchParams.get("gid");
 
     if (!global_id) {
       return Response.json(
@@ -25,7 +27,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ success: true, data: lyrics }, { status: 200 });
+    return NextResponse.json(
+      { success: true, message: "fetched sucessfull", data: lyrics },
+      { status: 200 }
+    );
   } catch (error: any) {
     console.error("Error fetching lyrics:", error);
 
