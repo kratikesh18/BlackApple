@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-if (!process.env.MONGODB_URI) {
-  throw new Error("Please define the DBURI environment variable");
+if (!process.env.MONGODB_URI && process.env.NODE_ENV !== 'production') {
+  console.warn("Warning: MONGODB_URI environment variable is not defined");
 }
 
 type ConnectionType = {
@@ -16,6 +16,11 @@ const DBConnect = async () => {
     return;
   }
 
+  if (!process.env.MONGODB_URI) {
+    console.error("Error: MONGODB_URI environment variable is not defined");
+    throw new Error("Please define the MONGODB_URI environment variable");
+  }
+
   try {
     // Connect to the database
     const dbInstance = await mongoose.connect(process.env.MONGODB_URI!);
@@ -24,7 +29,7 @@ const DBConnect = async () => {
     // connection.isConnected = 1;
   } catch (error) {
     console.error("Error connecting to the database:", error);
-    process.exit(1);
+    throw error;
   }
 };
 
