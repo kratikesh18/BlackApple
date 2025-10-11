@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import AuthProvider from "@/context/AuthProvider";
@@ -8,16 +7,6 @@ import SessionLayout from "@/context/SessionLayout";
 import { Provider } from "react-redux";
 import { store } from "@/store/store";
 import { Toaster } from "@/components/ui/sonner";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "blackApple : A Lyrics Libarary",
@@ -34,8 +23,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} mx-auto antialiased min-h-screen max-h-screen
-    overflow-y-auto scrollbar-none bg-gradient-to-br from-gray-900 via-purple-950 to-black text-white flex flex-col `}
+        className={`mx-auto antialiased min-h-screen max-h-screen
+    overflow-y-auto scrollbar-none bg-gradient-to-br from-gray-900 via-purple-950 to-black text-white flex flex-col font-sans`}
       >
         <AuthProvider>
           <SessionLayout>
