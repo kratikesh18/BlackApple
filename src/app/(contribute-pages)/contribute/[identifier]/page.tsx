@@ -16,6 +16,8 @@ import { newLyricsSchema } from "@/schemas/newLyricsSchema";
 import { RootState } from "@/store/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChartNoAxesColumnIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -42,8 +44,12 @@ const ContributePage = () => {
     defaultValues: { rawText: "" },
   });
 
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
   const saveLyrics = async (data: z.infer<typeof newLyricsSchema>) => {
     try {
+      setLoading(true);
       console.log("Form data to submit:", data);
       if (!currentTrack || !data) {
         console.log("provide full data");
@@ -54,14 +60,15 @@ const ContributePage = () => {
         global_id: currentTrack?.global_id,
       });
 
-      // console.log("Lyrics submission response:", response);
-      if (response.status !== 200) {
-        throw new Error("Failed to submit lyrics");
-      }
+      console.log("Lyrics submission response:", response);
+
       toast.success("Lyrics submitted successfully!");
-    } catch (error) {
+      router.push("/");
+    } catch (error: any) {
       console.error("Error submitting lyrics:", error);
-      toast.error("Failed to submit lyrics. Please try again.");
+      toast.error("Failed to submit lyrics.", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -89,8 +96,8 @@ const ContributePage = () => {
               </FormItem>
             )}
           />
-          <Button type="submit" className="bg-green-700">
-            Submit and sync
+          <Button type="submit" className="bg-green-700" disabled={loading}>
+            {loading ? "Submitting..." : "Submit and sync"}
           </Button>
         </form>
       </Form>

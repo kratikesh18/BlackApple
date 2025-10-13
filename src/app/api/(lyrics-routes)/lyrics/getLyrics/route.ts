@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const global_id = searchParams.get("global_id");
 
-  console.log("printing the params ", searchParams);
+  // console.log("printing the params ", searchParams);
 
   if (!global_id) {
     return new Response(

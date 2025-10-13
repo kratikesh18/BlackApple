@@ -1,7 +1,7 @@
 "use client";
 import ExploreTab from "@/components/app-components/home-page-components/ExploreTab";
 import GrooveTab, {
-  tempGrooveData,
+  GrooveTabProps,
 } from "@/components/app-components/home-page-components/GrooveTab";
 import TabNavigation from "@/components/app-components/home-page-components/TabNavigation";
 import SectionWrapper from "@/components/app-components/profile-page-components/SectionWrapper";
@@ -23,7 +23,7 @@ export default function Home() {
     (state: RootState) => state.currentTrack
   );
 
-  const [grooveData, setGrooveData] = useState<typeof tempGrooveData>();
+  const [grooveData, setGrooveData] = useState<GrooveTabProps["grooveData"]>();
   useEffect(() => {
     // document.title = "BlueCocain - Home";
 
@@ -70,7 +70,7 @@ export default function Home() {
             );
 
             console.log("Fetched lyrics:", lyrics);
-            setGrooveData(lyrics);
+            setGrooveData(lyrics.data.lyricsText);
             toast.success("Lyrics fetched successfully!");
           } catch (err) {
             toast.error("Failed to fetch lyrics.");
@@ -88,8 +88,8 @@ export default function Home() {
   }, []);
 
   return (
-    <SectionWrapper>
-      <div className="text-white h-[86vh] flex flex-col justify-between">
+    <SectionWrapper className="">
+      <div className="text-white h-[86vh]  flex flex-col justify-between">
         {/* Tab Navigation */}
         <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
@@ -107,7 +107,8 @@ export default function Home() {
 
         {/* Spotify Current State */}
         <SectionWrapper className="bg-gray-200/10 backdrop-blur-2xl bg-opacity-10 border border-white/20 px-3 rounded-lg ">
-          <SpotifyCurrentState track={currentTrack} />
+          {/* <SpotifyCurrentState track={currentTrack} /> */}
+          <SpotifyCurrentState />
         </SectionWrapper>
       </div>
     </SectionWrapper>

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-interface GrooveTabProps {
+export interface GrooveTabProps {
   grooveData: [
     {
       line: string;
@@ -72,7 +72,6 @@ function GrooveTab({ grooveData }: GrooveTabProps) {
       className="flex w-full flex-col gap-2 overflow-y-auto scrollbar-none my-2 max-h-[75vh] md:max-h-[80vh] px-1 md:px-3"
       ref={lyricsContainerRef}
     >
-      <h1>hllo</h1>
       {grooveData &&
         grooveData.map((item, index) => (
           <div

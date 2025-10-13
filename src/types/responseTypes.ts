@@ -7,5 +7,5 @@ export type TrackType = {
   artists: { name: string }[];
   name: string;
   global_id: string;
+  progress: string;
 };
-
