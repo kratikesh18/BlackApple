@@ -9,3 +9,14 @@ export type TrackType = {
   global_id: string;
   progress: string;
 };
+
+
+export interface ApiResponseType<T = any> {
+  success: boolean;
+  message: string;
+  data?: T;
+  error?: {
+    code?: string;
+    details?: any;
+  };
+}

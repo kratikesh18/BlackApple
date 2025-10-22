@@ -14,14 +14,13 @@ import LogoutIcon from "../icons/LogoutIcon";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { set } from "lodash";
+import { openSearch } from "@/store/searchBarSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
-const Navbar = ({
-  searchBarOpen,
-  setSearchBarOpen,
-}: {
-  searchBarOpen?: boolean;
-  setSearchBarOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+const Navbar = ({}: {}) => {
+  const dispatch = useDispatch();
+  const { isOpen } = useSelector((state: RootState) => state.searchBar);
   const { status, signOut } = useMySession();
 
   const pathname = usePathname();
@@ -47,27 +46,24 @@ const Navbar = ({
       {/* user actions  */}
 
       <div className="flex justify-center items-center gap-4 cursor-pointer">
-        {setSearchBarOpen && searchBarOpen !== undefined && (
-          <Button
-            variant="ghost"
-            onClick={() => setSearchBarOpen(!searchBarOpen)}
-          >
+        {!isOpen && (
+          <div onClick={() => dispatch(openSearch())}>
             <SearchIcon />
-          </Button>
+          </div>
         )}
         {
-          <Popover>
-            <PopoverTrigger title="Search">
-              <SearchIcon />
-            </PopoverTrigger>
-            <PopoverContent className="mt-4 mr-4 w-full border-transparent bg-white/10 backdrop-blur-2xl text-white">
-              <Input
-                type="text"
-                className="border-2 py-5 px-4 w-full text-lg rounded-md active:border-none  "
-                placeholder="Find Lyrics"
-              />
-            </PopoverContent>
-          </Popover>
+          // <Popover>
+          //   <PopoverTrigger title="Search">
+          //     <SearchIcon />
+          //   </PopoverTrigger>
+          //   <PopoverContent className="mt-4 mr-4 w-full border-transparent bg-white/10 backdrop-blur-2xl text-white">
+          //     <Input
+          //       type="text"
+          //       className="border-2 py-5 px-4 w-full text-lg rounded-md active:border-none  "
+          //       placeholder="Find Lyrics"
+          //     />
+          //   </PopoverContent>
+          // </Popover>
         }
 
         {pathname !== "/library" && (

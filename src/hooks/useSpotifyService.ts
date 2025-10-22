@@ -79,5 +79,7 @@ export const useSpotifyService = () => {
     }
   };
 
+  const getRecentlyPlayedSongs = useCallback(() => {}, []);
+
   return { getCurrentlyPlaying, checkLyricsAvailability, submitLyrics };
 };

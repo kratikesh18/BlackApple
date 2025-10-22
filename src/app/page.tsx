@@ -1,11 +1,11 @@
 "use client";
-import ExploreTab from "@/components/app-components/home-page-components/ExploreTab";
+
 import GrooveTab, {
   GrooveTabProps,
 } from "@/components/app-components/home-page-components/GrooveTab";
 import TabNavigation from "@/components/app-components/home-page-components/TabNavigation";
 import SectionWrapper from "@/components/app-components/profile-page-components/SectionWrapper";
-import SpotifyCurrentState from "@/components/app-components/profile-page-components/SpotifyCurrentState";
+
 import { useLyricsService } from "@/hooks/useLyricsService";
 import { useSpotifyService } from "@/hooks/useSpotifyService";
 import { RootState } from "@/store/store";
@@ -24,93 +24,88 @@ export default function Home() {
   );
 
   const [grooveData, setGrooveData] = useState<GrooveTabProps["grooveData"]>();
-  useEffect(() => {
-    // document.title = "BlueCocain - Home";
 
-    const fetchData = async () => {
-      try {
-        const currentTrack = await getCurrentlyPlaying();
+  // useEffect(() => {
+  //   // document.title = "BlueCocain - Home";
 
-        if (currentTrack) {
-          console.log("Fetched current track on home page:", currentTrack);
-        }
-      } catch (err) {
-        toast.error("Failed to fetch current track from Spotify.");
-        console.error("Error fetching current track:", err);
-      }
-    };
+  //   const fetchData = async () => {
+  //     try {
+  //       const currentTrack = await getCurrentlyPlaying();
 
-    fetchData();
-    //  auto-refresh every 30 sec
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  //       if (currentTrack) {
+  //         console.log("Fetched current track on home page:", currentTrack);
+  //       }
+  //     } catch (err) {
+  //       toast.error("Failed to fetch current track from Spotify.");
+  //       console.error("Error fetching current track:", err);
+  //     }
+  //   };
 
-  useEffect(() => {
-    const fetchLyrics = async () => {
-      if (currentTrack) {
-        // if the lyrics are already in the store, no need to check again
+  //   fetchData();
+  //   //  auto-refresh every 30 sec
+  //   const interval = setInterval(fetchData, 30000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
-        const lyricsAvailable = await checkLyricsAvailability(
-          currentTrack.global_id
-        );
+  // useEffect(() => {
+  //   const fetchLyrics = async () => {
+  //     if (currentTrack) {
+  //       // if the lyrics are already in the store, no need to check again
 
-        console.log("Lyrics availability:", lyricsAvailable);
+  //       const lyricsAvailable = await checkLyricsAvailability(
+  //         currentTrack.global_id
+  //       );
 
-        if (lyricsAvailable === null && !lyricsAvailable.success) {
-          toast.error(
-            lyricsAvailable.error || "Lyrics not available for this track."
-          );
-        }
+  //       console.log("Lyrics availability:", lyricsAvailable);
 
-        if (lyricsAvailable && lyricsAvailable.success) {
-          try {
-            const lyrics = await getLyricsForCurrentTrack(
-              currentTrack.global_id
-            );
+  //       if (lyricsAvailable === null && !lyricsAvailable.success) {
+  //         toast.error(
+  //           lyricsAvailable.error || "Lyrics not available for this track."
+  //         );
+  //       }
 
-            console.log("Fetched lyrics:", lyrics);
-            setGrooveData(lyrics.data.lyricsText);
-            toast.success("Lyrics fetched successfully!");
-          } catch (err) {
-            toast.error("Failed to fetch lyrics.");
-            console.error("Error fetching lyrics:", err);
-          } finally {
-            // setLoadingLyrics(false);
-          }
-        }
-      } else {
-        console.log("No track is currently playing.");
-      }
-    };
+  //       if (lyricsAvailable && lyricsAvailable.success) {
+  //         try {
+  //           const lyrics = await getLyricsForCurrentTrack(
+  //             currentTrack.global_id
+  //           );
 
-    fetchLyrics();
-  }, []);
+  //           console.log("Fetched lyrics:", lyrics);
+  //           setGrooveData(lyrics.data.lyricsText);
+  //           toast.success("Lyrics fetched successfully!");
+  //         } catch (err) {
+  //           toast.error("Failed to fetch lyrics.");
+  //           console.error("Error fetching lyrics:", err);
+  //         } finally {
+  //           // setLoadingLyrics(false);
+  //         }
+  //       }
+  //     } else {
+  //       console.log("No track is currently playing.");
+  //     }
+  //   };
+
+  //   fetchLyrics();
+  // }, []);
 
   return (
-    <SectionWrapper className="">
-      <div className="text-white h-[86vh]  flex flex-col justify-between">
-        {/* Tab Navigation */}
-        <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
+    <SectionWrapper className="border-2 min-h-max">
+      {/* Tab Navigation */}
+      <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        {/* Content Sections */}
+      {/* Content Sections */}
 
-        {activeTab === "Groove" && grooveData && (
-          <GrooveTab grooveData={grooveData} />
-        )}
-        {/* {activeTab === "Explore" && <ExploreTab />} */}
-        {activeTab === "Explore" && (
-          <div className="flex justify-center items-center h-full w-full">
-            <h1 className="text-3xl font-bold">Comming Soon</h1>
-          </div>
-        )}
-
-        {/* Spotify Current State */}
-        <SectionWrapper className="bg-gray-200/10 backdrop-blur-2xl bg-opacity-10 border border-white/20 px-3 rounded-lg ">
-          {/* <SpotifyCurrentState track={currentTrack} /> */}
-          <SpotifyCurrentState />
-        </SectionWrapper>
-      </div>
+      {activeTab === "Groove" && (
+        // <GrooveTab grooveData={grooveData} />
+        // <GrooveTab />
+        <div>groove tab</div>
+      )}
+      {/* {activeTab === "Explore" && <ExploreTab />} */}
+      {activeTab === "Explore" && (
+        <div className="flex justify-center items-center h-full w-full">
+          <h1 className="text-3xl font-bold">Comming Soon</h1>
+        </div>
+      )}
     </SectionWrapper>
   );
 }

@@ -1,8 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import currentTrackReducer from "./currentTrackSlice";
+
+import { SearchBarSlice } from "./searchBarSlice";
+import { currentTrackSlice } from "./currentTrackSlice";
+
 const store = configureStore({
   reducer: {
-    currentTrack: currentTrackReducer,
+    currentTrack: currentTrackSlice.reducer,
+    searchBar: SearchBarSlice.reducer,
   },
 });
 

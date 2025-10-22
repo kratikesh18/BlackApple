@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
   });
 
   // console.log(token);
-  
+
   const { pathname } = request.nextUrl;
 
   // If user is NOT authenticated and trying to access a protected route

@@ -23,4 +23,4 @@ const currentTrackSlice = createSlice({
 });
 
 export const { setCurrentTrack } = currentTrackSlice.actions;
-export default currentTrackSlice.reducer;
+export { currentTrackSlice };

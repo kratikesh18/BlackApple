@@ -1,10 +1,11 @@
 export interface RecentlyPlayedResponse {
   track: {
     album: {
-      images: { url: string }[];
+      images: { url: string };
     };
     artists: { name: string }[];
     name: string;
+    global_id: string;
   };
 }
 

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+"use client";
+import React, { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { debounce } from "lodash";
 import axios from "axios";
@@ -8,113 +9,188 @@ import {
   RecentlyPlayedResponse,
 } from "@/types/RecentlyPlayedResponse";
 import SongTile from "../Tile-components/SongTile";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/store/store";
+import { closeSearch } from "@/store/searchBarSlice";
 
 export const HeroSearchBar = () => {
+  const dispatch = useDispatch();
+  const { isOpen } = useSelector((state: RootState) => state.searchBar);
+  const { session } = useMySession();
 
-
-  const { session, status } = useMySession();
-  
-  const [searchQuery, setSearchQuery] = useState<string>("");
-
-  const handleInputChange = debounce((query: string) => {
-    setSearchQuery(query);
-  }, 500);
-
+  const [query, setQuery] = useState<string>("");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-
   const [resultTracks, setResultTracks] = useState<
     RecentlyPlayedResponse[] | null
   >(null);
-  // const [resultAlbums, setResultAlbums] = useState<any[]>([]);
   const [resultArtists, setResultArtists] = useState<
     MyTopArtistsResponse[] | null
   >(null);
 
+  // debounce input -> update query
+  const debounced = useMemo(
+    () =>
+      debounce((q: string) => {
+        setQuery(q.trim());
+      }, 450),
+    []
+  );
+
   useEffect(() => {
-    const fetchSpotifyLibrary = async () => {
+    return () => {
+      debounced.cancel();
+    };
+  }, [debounced]);
+
+  // fetch results when query changes and overlay is open
+  useEffect(() => {
+    //if searchbar not opened then do nothing
+    if (!isOpen) return;
+
+    //if query is empty then reset all states
+    if (!query) {
+      setResultTracks(null);
+      setResultArtists(null);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
+    const ac = new AbortController();
+
+    const fetchSearch = async () => {
       setLoading(true);
       setError(null);
-      if (!searchQuery) {
-        setLoading(false);
-        return;
-      }
       try {
-        const response = await axios.get(
-          `https://api.spotify.com/v1/search?q=${searchQuery}&type=album%2Cartist%2Ctrack&market=IN&limit=5&offset=5`,
+        const res = await axios.get(`https://api.spotify.com/v1/search`, {
+          params: {
+            q: query,
+            type: "track,artist,album",
+            limit: 6,
+            market: "IN",
+          },
+          headers: { Authorization: `Bearer ${session?.accessToken}` },
+          signal: ac.signal,
+        });
 
-          {
-            headers: {
-              Authorization: `Bearer ${session?.accessToken}`,
-            },
-          }
+        const data = res.data;
+        console.log(data);
+        setResultTracks(data.tracks?.items?.length ? data.tracks.items : null);
+        setResultArtists(
+          data.artists?.items?.length ? data.artists.items : null
         );
-
-        if (response.status === 200) {
-          console.log(response.data);
-          if (response.data.tracks.items.length > 0) {
-            setResultTracks(response.data.tracks.items);
-          }
-          // if (response.data.albums.items.length > 0) {
-          //   setResultAlbums(response.data.albums.items);
-          // }
-          if (response.data.artists.items.length > 0) {
-            setResultArtists(response.data.artists.items);
-          }
-          if (response.data.tracks.items.length === 0) {
-            setError("No results found for your search.");
-          } else {
-            setError(null);
-          }
+        if (!data.tracks?.items?.length && !data.artists?.items?.length) {
+          setError("No results found.");
         }
-      } catch (error) {
-        console.log("Error fetching top artists:", error);
+      } catch (err: any) {
+        if (axios.isCancel(err)) return;
+        setError("Failed to fetch results.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSpotifyLibrary();
-  }, [searchQuery]);
+    fetchSearch();
+    return () => ac.abort();
+  }, [query, isOpen, session?.accessToken]);
+
+  // escape to close + lock body scroll while open
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        dispatch(closeSearch()); // replace with your action if different
+      }
+    };
+
+    const prev = document.body.style.overflow;
+
+    document.body.style.overflow = "hidden";
+
+    window.addEventListener("keydown", onKey);
+
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [isOpen, dispatch]);
+
+  if (!isOpen) return null;
 
   return (
-    <div className="flex justify-center items-center mx-auto flex-col gap-4">
-      <Input
-        type="text"
-        onChange={(e) => handleInputChange(e.target.value)}
-        placeholder="Search for Lyrics "
-        className="text-lg py-5 font-semibold  rounded-md bg-gray-200/10 border border-white/20 text-white  md:text-2xl placeholder:text-gray-300/90"
-      />
+    <div
+      className="fixed inset-0 z-[150] flex items-center justify-center bg-black/75 backdrop-blur-[0.7px] p-4 border-2 border-white "
+      aria-modal="true"
+      role="dialog"
+      // clicking backdrop closes overlay
+      onClick={() => dispatch(closeSearch())}
+    >
+      {/* <div
+        className="relative w-full max-w-3xl mx-auto rounded-xl bg-gradient-to-br from-gray-900/90 to-black/80 border border-white shadow-2xl "
+        onClick={(e) => e.stopPropagation()}
+      > */}
+      {/* close button */}
+      {/* <button
+          aria-label="Close search"
+          onClick={() => dispatch(closeSearch())}
+          className="absolute top-3 right-3 text-gray-300 hover:text-white text-xl"
+        >
+          ✕
+        </button> */}
 
-      {loading && <div className="loader"></div>}
-
-      <div className="flex gap-2.5 w-max mb-3">
-        {resultTracks &&
-          resultTracks.map((song, index) => (
-            <SongTile
-              albumArt={song.track.album.images[0].url}
-              name={song.track.name}
-              artist={song.track.artists[0].name}
-              key={index}
-            />
-          ))}
+      {/* centered input */}
+      <div className="absolute top-[17vh] w-full px-4 md:p-0 md:w-md h-fit ">
+        <Input
+          autoFocus
+          onChange={(e) => debounced(e.target.value)}
+          placeholder="Search for lyrics, artists, albums..."
+          className="p-4 py-6   md:text-xl w-full  border border-white/30 placeholder-gray-400 text-white focus:border-white focus:ring-0 bg-black "
+        />
       </div>
 
-      {/* {error && (
-        <div className={`text-red-700 ${error ? "block" : "hidden"}`}>
-          {error}
-          <h2 className="text-white flex gap-2 text-2xl items-center">
-            Create{" "}
-            <Link
-              href={`/addLyrics/createAlbum/${searchQuery}`}
-              className="font-bold underline "
-            >
-              {searchQuery}
-            </Link>{" "}
-            <RightIcon />{" "}
-          </h2>
-        </div>
-      )} */}
+      {/* results */}
+      <div className="mt-6 max-h-[60vh] overflow-y-auto">
+        {loading && <div className="loader "></div>}
+
+        {error && !loading && (
+          <p className="text-center text-red-400 py-4">{error}</p>
+        )}
+        {/*
+          <div className="flex flex-wrap gap-3 justify-center">
+            {resultTracks &&
+              resultTracks.map((song, i) => (
+                <SongTile
+                  key={i}
+                  albumArt={song.track.album.images[0]?.url}
+                  name={song.track.name}
+                  artist={song.track.artists[0]?.name}
+                />
+              ))}
+          </div>
+
+          {resultArtists && (
+            <div className="mt-4">
+              <h3 className="text-sm text-gray-300 mb-2">Artists</h3>
+              <div className="flex flex-wrap gap-2">
+                {resultArtists.map((a, i) => (
+                  <div
+                    key={i}
+                    className="px-3 py-1 rounded-md bg-white/5 text-gray-200 text-sm"
+                  >
+                    {a.name}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )} */}
+        {!resultTracks || !resultArtists ? (
+          <></>
+        ) : (
+          <div>Response logged in console</div>
+        )}
+      </div>
+      {/* </div> */}
     </div>
   );
 };
