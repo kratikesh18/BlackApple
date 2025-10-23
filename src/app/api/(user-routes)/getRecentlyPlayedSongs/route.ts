@@ -1,48 +1,39 @@
 "use server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/options";
-import { ApiResponse } from "@/lib/apiResponse";
-import { RecentlyPlayedResponse } from "@/types/RecentlyPlayedResponse";
 
+import { ApiResponse } from "@/lib/apiResponse";
+
+import { spotify } from "@/lib/spotify";
 
 export async function GET(req: Request) {
   //getting the server session
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    //if not the session then throw the error respose
-    return ApiResponse.error("No server Session", 401);
-  }
 
   try {
-    const response: spot = await fetch(
-      "https://api.spotify.com/v1/me/player/recently-played?limit=5",
-      {
-        headers: {
-          Authorization: `Bearer ${session?.accessToken}`,
-        },
-        method: "GET",
-      }
-    );
     //as of we are making the request using fetch api then we must have to covert into json first
 
-    const { items: recentlyPlayedSongs } = await response.json();
+    const s = await spotify();
 
-    const dataToSend: RecentlyPlayedResponse = {
-      track: {
-        name: "",
-        album: { images: { url: "" } },
-        artists: [{ name: "" }, { name: "" }],
-        global_id: "",
-      },
-    };
-    console.log(recentlyPlayedSongs);
+    const recentlyPlayedSongs = await s.player.getRecentlyPlayedTracks(5);
+
     if (!recentlyPlayedSongs) {
-      throw new Error("Failed to get recently Played ");
+      console.log(recentlyPlayedSongs);
+      throw new Error(
+        "Error fetching the recentlyplaying tracks",
+        recentlyPlayedSongs
+      );
     }
+    const response = recentlyPlayedSongs.items.map((song) => ({
+      gid: song.track.id,
+      song_name: song.track.name,
+      image: song.track.album.images[0].url,
+      artist: song.track.artists.map((artist) => ({
+        artist_id: artist.id,
+        artist_name: artist.name,
+      })),
+    }));
 
     //after successfully pulling the recently played we have to send it to the frontend
     return ApiResponse.success(
-      recentlyPlayedSongs,
+      response,
       "Recently Played songs fetched successfully",
       200
     );

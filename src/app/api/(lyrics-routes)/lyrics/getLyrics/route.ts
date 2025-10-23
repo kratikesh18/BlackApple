@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const global_id = searchParams.get("global_id");
+  const global_id = searchParams.get("gid");
 
   // console.log("printing the params ", searchParams);
 
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
         success: false,
         error: "Internal Server Error",
       }),
-      { status: 500,  headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }

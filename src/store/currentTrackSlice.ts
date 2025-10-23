@@ -1,14 +1,12 @@
-import { TrackType } from "@/types/responseTypes";
+import { TrackType } from "@/components/app-components/profile-page-components/SpotifyCurrentState";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface CurrentTrackState {
   currentTrack: TrackType | null;
-  isAvailable: boolean;
 }
 
 const initialState: CurrentTrackState = {
   currentTrack: null,
-  isAvailable: false,
 };
 
 const currentTrackSlice = createSlice({
@@ -17,10 +15,16 @@ const currentTrackSlice = createSlice({
   reducers: {
     setCurrentTrack(state, action: PayloadAction<TrackType | null>) {
       state.currentTrack = action.payload;
-      state.isAvailable = action.payload !== null;
+    },
+
+    changeAvailability: (state) => {
+      if (state.currentTrack) {
+        state.currentTrack.isLyricsAvailable = true;
+      }
     },
   },
 });
 
-export const { setCurrentTrack } = currentTrackSlice.actions;
+export const { setCurrentTrack, changeAvailability } =
+  currentTrackSlice.actions;
 export { currentTrackSlice };

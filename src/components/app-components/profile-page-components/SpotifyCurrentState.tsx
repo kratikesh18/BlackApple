@@ -1,66 +1,48 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import SectionWrapper from "./SectionWrapper";
-import { useSpotifyService } from "@/hooks/useSpotifyService";
-import { TrackType } from "@/types/responseTypes";
-import { usePathname, useRouter } from "next/navigation";
+
+import { useSelector } from "react-redux";
+
+import { RootState } from "@/store/store";
 
 const PLACEHOLDER =
   "data:image/svg+xml;%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500' viewBox='0 0 24 24'%3E%3Crect fill='%23343a40' width='100%25' height='100%25'/%3E%3Ctext x='50%25' y='52%25' fill='%23fff' font-size='10' font-family='Arial' dominant-baseline='middle' text-anchor='middle'%3ENO%20IMG%3C/text%3E%3C/svg%3E";
 
-export default function SpotifyCurrentState() {
-  const { getCurrentlyPlaying } = useSpotifyService();
+export type TrackType = {
+  gid: string;
+  name: string;
+  artists: string[];
+  album: {
+    name: string;
+    image: string;
+  };
+  progressMs: string;
+  isPlaying: boolean;
+  isLyricsAvailable: boolean;
+};
 
-  const [track, setTrack] = useState<TrackType | null>({
-    album: {
-      name: "taylor",
-      artists: [{ name: "pateek" }],
-      images: [
-        {
-          url: "https://i.scdn.co/image/ab67616d0000b273806c160566580d6335d1f16c",
-        },
-      ],
-    },
-    artists: [{ name: "prateek" }],
-    global_id: "2323t3434",
-    name: "dik",
-    progress: "3421",
-  });
+export default function SpotifyCurrentState() {
+  // const { getCurrentlyPlaying } = useSpotifyService();
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let mounted = true;
-    const load = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await getCurrentlyPlaying();
-        console.log(res);
-        if (!mounted) return;
-        setTrack(res);
-      } catch (err) {
-        if (!mounted) return;
-        setError("Failed to load current track");
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
-    // load();
-    return () => {
-      mounted = false;
-    };
-  }, [getCurrentlyPlaying]);
+  const { currentTrack } = useSelector(
+    (state: RootState) => state.currentTrack
+  );
+
+  if (!currentTrack) {
+    return <div>NO Song Playing on Spotify</div>;
+  }
 
   return (
     <div className="container bg-gray-700/40 border border-white/6 rounded-lg p-4 md:p-5 flex flex-col md:flex-row items-center gap-4">
       {/* Artwork */}
       <div className="flex-shrink-0">
         <img
-          src={track?.album.images?.[0]?.url || PLACEHOLDER}
-          alt={track?.name || "No track"}
+          src={currentTrack.album.image || PLACEHOLDER}
+          alt={currentTrack.album.name || "No track"}
           className="h-20 w-20 md:h-24 md:w-24 object-cover rounded-md"
         />
       </div>
@@ -74,16 +56,16 @@ export default function SpotifyCurrentState() {
           </div>
         ) : error ? (
           <p className="text-sm text-red-400">{error}</p>
-        ) : track ? (
+        ) : currentTrack ? (
           <>
             <h4 className="text-sm md:text-base font-semibold text-white truncate">
-              {track.name}
+              {currentTrack.name}
             </h4>
             <p className="text-xs md:text-sm text-gray-300 truncate">
-              {track.artists.map((a) => a.name).join(", ")}
+              {currentTrack.artists.map((a) => a).join(", ")}
             </p>
             <p className="text-xs text-gray-400 truncate">
-              Album: {track.album.name}
+              Album: {currentTrack.album.name}
             </p>
           </>
         ) : (
@@ -96,20 +78,20 @@ export default function SpotifyCurrentState() {
       {/* Actions */}
       <div className="flex-shrink-0">
         <div></div>
-        {track ? (
+        {currentTrack && currentTrack.isLyricsAvailable ? (
           <Link
-            href={`/lyrics/${encodeURIComponent(track.name)}`}
+            href={`/lyrics/${encodeURIComponent(currentTrack.gid)}`}
             className="inline-block bg-purple-700 hover:bg-purple-800 text-white text-xs md:text-sm px-3 py-2 rounded-md"
           >
             Show Lyrics
           </Link>
         ) : (
-          <button
+          <Link
             className="inline-block bg-gray-700 text-white text-xs md:text-sm px-3 py-2 rounded-md"
-            disabled
+            href={`/contribute/${currentTrack.gid}`}
           >
-            No Lyrics
-          </button>
+            contribute
+          </Link>
         )}
       </div>
     </div>

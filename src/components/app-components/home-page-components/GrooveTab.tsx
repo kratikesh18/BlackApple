@@ -1,3 +1,8 @@
+"use client";
+
+import api from "@/lib/api";
+import { RootState } from "@/store/store";
+import { usePathname, useRouter } from "next/navigation";
 import React, {
   useCallback,
   useEffect,
@@ -5,43 +10,82 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useSelector } from "react-redux";
+import { toast } from "sonner";
 
-export interface GrooveTabProps {
-  grooveData: {
-    line: string;
-    startTime: number;
-    endTime: number;
-    _id: any;
-  }[];
+export interface GrooveTabItem {
+  line: string;
+  startTime: number;
+  endTime: number;
+  _id: string;
 }
 
-function GrooveTab({ grooveData }: GrooveTabProps) {
+function GrooveTab() {
+  const { currentTrack } = useSelector(
+    (state: RootState) => state.currentTrack
+  );
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const [grooveData, setGrooveData] = useState<GrooveTabItem[]>([]);
   const [currentTime, setCurrentTime] = useState<number>(0);
+
   const lyricsContainerRef = useRef<HTMLDivElement>(null);
   const currentLineRef = useRef<HTMLDivElement | null>(null);
+  const startTimeRef = useRef<number>(Date.now());
 
-  // ---- Simulate playback time with requestAnimationFrame ----
+  // ---- Fetch lyrics data ----
   useEffect(() => {
-    let animationFrame: number;
+    const fetchLyrics = async () => {
+      try {
+        if (!currentTrack?.gid) return;
 
-    const updateTime = () => {
-      setCurrentTime((prev) => prev + 1);
-      animationFrame = requestAnimationFrame(updateTime);
+        // Redirect only if not already on lyrics page
+        if (pathname.startsWith("/lyrics")) {
+          router.replace(`/lyrics/${currentTrack.gid}`);
+        }
+
+        const res = await api.get(`/lyrics/getLyrics?gid=${currentTrack.gid}`);
+        const data = res.data?.data;
+
+        if (!data || !data.lyricsText) {
+          toast.error("Lyrics not found.");
+          return;
+        }
+
+        setGrooveData(data.lyricsText);
+      } catch (err: any) {
+        toast.error("Failed to fetch lyrics.");
+        console.error(err.message);
+      }
     };
 
-    animationFrame = requestAnimationFrame(updateTime);
+    fetchLyrics();
+  }, [currentTrack, pathname, router]);
 
+  // ---- Simulate playback time ----
+  useEffect(() => {
+    const updateTime = () => {
+      const now = Date.now();
+      const delta = (now - startTimeRef.current) / 1000; // seconds
+      setCurrentTime(delta);
+      requestAnimationFrame(updateTime);
+    };
+
+    const animationFrame = requestAnimationFrame(updateTime);
     return () => cancelAnimationFrame(animationFrame);
   }, []);
 
-  // ---- Find current line based on time (memoized) ----
-  const currentLine = useMemo(() => {
-    return grooveData.find(
-      (line) => line.startTime <= currentTime && line.endTime >= currentTime
-    );
-  }, [currentTime, grooveData]);
+  // ---- Find current line ----
+  const currentLine = useMemo(
+    () =>
+      grooveData.find(
+        (line) => line.startTime <= currentTime && line.endTime >= currentTime
+      ),
+    [currentTime, grooveData]
+  );
 
-  // ---- Scroll to current line when it changes ----
+  // ---- Scroll to current line ----
   useEffect(() => {
     if (currentLineRef.current && lyricsContainerRef.current) {
       const container = lyricsContainerRef.current;
@@ -55,9 +99,10 @@ function GrooveTab({ grooveData }: GrooveTabProps) {
   // ---- Jump to clicked line ----
   const handleLineClick = useCallback((startTime: number) => {
     setCurrentTime(startTime);
+    startTimeRef.current = Date.now() - startTime * 1000;
   }, []);
 
-  // ---- Format time as mm:ss ----
+  // ---- Format time ----
   const formatTime = useCallback((seconds: number) => {
     const min = Math.floor(seconds / 60)
       .toString()
@@ -101,11 +146,3 @@ function GrooveTab({ grooveData }: GrooveTabProps) {
 }
 
 export default React.memo(GrooveTab);
-
-// import React from "react";
-
-// const GrooveTab = () => {
-//   return <div className="text-2xl">GrooveTab</div>;
-// };
-
-// export default GrooveTab;

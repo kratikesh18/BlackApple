@@ -1,8 +1,6 @@
 "use client";
 
-import GrooveTab, {
-  GrooveTabProps,
-} from "@/components/app-components/home-page-components/GrooveTab";
+import GrooveTab from "@/components/app-components/home-page-components/GrooveTab";
 import TabNavigation from "@/components/app-components/home-page-components/TabNavigation";
 import SectionWrapper from "@/components/app-components/profile-page-components/SectionWrapper";
 
@@ -23,7 +21,7 @@ export default function Home() {
     (state: RootState) => state.currentTrack
   );
 
-  const [grooveData, setGrooveData] = useState<GrooveTabProps["grooveData"]>();
+  // const [grooveData, setGrooveData] =
 
   // useEffect(() => {
   //   // document.title = "BlueCocain - Home";
@@ -97,8 +95,8 @@ export default function Home() {
 
       {activeTab === "Groove" && (
         // <GrooveTab grooveData={grooveData} />
-        // <GrooveTab />
-        <div>groove tab</div>
+        <GrooveTab />
+        // <div>groove tab</div>
       )}
       {/* {activeTab === "Explore" && <ExploreTab />} */}
       {activeTab === "Explore" && (

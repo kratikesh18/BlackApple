@@ -33,7 +33,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} mx-auto antialiased min-h-screen max-h-screen
-      overflow-y-auto scrollbar-none bg-gradient-to-br from-gray-900 via-purple-950 to-black text-white flex h-screen `}
+      overflow-y-auto scrollbar-none bg-gradient-to-br from-gray-900 via-purple-950 to-black text-white flex flex-col h-screen `}
       >
         <AuthProvider>
           <SessionLayout>

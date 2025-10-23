@@ -1,29 +1,35 @@
 "use server";
 import { ApiResponse } from "@/lib/apiResponse";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/options";
+
+import { spotify } from "@/lib/spotify";
 
 export async function GET(req: Request) {
-  const session = await getServerSession(authOptions);
-  console.log(session);
-  if (!session) {
-    return ApiResponse.error("Session not found ", 401);
-  }
-
   try {
-    const response = await fetch(
-      "https://api.spotify.com/v1/me/top/artists?limit=5",
-      {
-        headers: {
-          Authorization: `Bearer ${session?.accessToken}`,
-        },
-        method: "GET",
-      }
-    ).then(async (data) => await data.json());
-    // console.log("printing the spotify response", response);
-    return ApiResponse.success(response, "fetched successfull", 202);
-  } catch (error) {
-    console.error("Error fetching top artists:", error);
-    return ApiResponse.error(`error : ${error}`, 301);
+    const s = await spotify();
+
+    const topArtists = await s.currentUser.topItems(
+      "artists",
+      "medium_term",
+      5
+    );
+    console.log("printing the top artists: ", topArtists);
+    if (!topArtists) {
+      return ApiResponse.error("Failed to fetch top artists", 500);
+    }
+
+    const formatted = topArtists.items.map((artist) => ({
+      id: artist.id,
+      name: artist.name,
+      image: artist.images?.[0]?.url || "/default-artist.png",
+    }));
+
+    return ApiResponse.success(
+      formatted,
+      "Top artists fetched successfully",
+      200
+    );
+  } catch (error: any) {
+    console.log("Error fetching top artists:", error);
+    return ApiResponse.error(`Error: ${error.message || error}`, 500);
   }
 }

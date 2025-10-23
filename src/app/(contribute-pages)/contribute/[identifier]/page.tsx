@@ -13,13 +13,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { useSpotifyService } from "@/hooks/useSpotifyService";
 import api from "@/lib/api";
 import { newLyricsSchema } from "@/schemas/newLyricsSchema";
+import { changeAvailability } from "@/store/currentTrackSlice";
 import { RootState } from "@/store/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChartNoAxesColumnIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -43,7 +44,7 @@ const ContributePage = () => {
     resolver: zodResolver(newLyricsSchema),
     defaultValues: { rawText: "" },
   });
-
+  const dispatch = useDispatch();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -57,12 +58,13 @@ const ContributePage = () => {
       }
       const response = await api.post("/lyrics/contribute", {
         rawString: data.rawText,
-        global_id: currentTrack?.global_id,
+        global_id: currentTrack?.gid,
       });
 
       console.log("Lyrics submission response:", response);
 
       toast.success("Lyrics submitted successfully!");
+      dispatch(changeAvailability());
       router.push("/");
     } catch (error: any) {
       console.error("Error submitting lyrics:", error);
@@ -102,7 +104,7 @@ const ContributePage = () => {
         </form>
       </Form>
 
-      <SpotifyCurrentState track={currentTrack} />
+      <SpotifyCurrentState />
     </div>
   );
 };
