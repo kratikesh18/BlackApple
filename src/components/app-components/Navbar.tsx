@@ -11,14 +11,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useMySession } from "@/context/MySessionContext";
 import HomeIcon from "../icons/HomeIcon";
 import LogoutIcon from "../icons/LogoutIcon";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { set } from "lodash";
+
 import { openSearch } from "@/store/searchBarSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
-const Navbar = ({}: {}) => {
+const Navbar = () => {
   const dispatch = useDispatch();
   const { isOpen } = useSelector((state: RootState) => state.searchBar);
   const { status, signOut } = useMySession();

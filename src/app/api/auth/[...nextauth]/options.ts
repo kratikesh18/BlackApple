@@ -52,11 +52,10 @@ async function refreshAccessToken(token: any) {
       expiresAt: Date.now() + data.expires_in * 1000, // expires_in is in seconds
       refreshToken: data.refresh_token ?? token.refreshToken, // keep old if new not provided
     };
-  } catch (error: any) {
-    console.error(
-      "❌ Error refreshing Spotify access token:",
-      error.response?.data || error.message
-    );
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("❌ Error refreshing Spotify access token:", error.message);
+    }
 
     return {
       ...token,

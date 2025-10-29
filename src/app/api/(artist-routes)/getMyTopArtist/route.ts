@@ -1,9 +1,8 @@
-"use server";
 import { ApiResponse } from "@/lib/apiResponse";
 
 import { spotify } from "@/lib/spotify";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const s = await spotify();
 
@@ -12,6 +11,7 @@ export async function GET(req: Request) {
       "medium_term",
       5
     );
+
     console.log("printing the top artists: ", topArtists);
     if (!topArtists) {
       return ApiResponse.error("Failed to fetch top artists", 500);
@@ -20,16 +20,19 @@ export async function GET(req: Request) {
     const formatted = topArtists.items.map((artist) => ({
       id: artist.id,
       name: artist.name,
-      image: artist.images?.[0]?.url || "/default-artist.png",
+      image: artist.images?.[0]?.url,
     }));
+    console.log("printing the formatted data: ", formatted);
 
     return ApiResponse.success(
       formatted,
       "Top artists fetched successfully",
       200
     );
-  } catch (error: any) {
-    console.log("Error fetching top artists:", error);
-    return ApiResponse.error(`Error: ${error.message || error}`, 500);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log("Error fetching top artists:", error);
+      return ApiResponse.error(`Error: ${error.message || error}`, 500);
+    }
   }
 }

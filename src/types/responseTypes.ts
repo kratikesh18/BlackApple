@@ -10,13 +10,16 @@ export type TrackType = {
   progress: string;
 };
 
-
-export interface ApiResponseType<T = any> {
+export interface ApiResponseType<T = {}> {
   success: boolean;
   message: string;
   data?: T;
   error?: {
     code?: string;
-    details?: any;
+    details?: {};
   };
+}
+
+export interface GlobalErrorType {
+  message: string;
 }

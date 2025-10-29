@@ -1,5 +1,4 @@
 "use client";
-import { ContributeLyricsForm } from "@/components/app-components/lyrics-components/ContributeLyricsForm";
 import SpotifyCurrentState from "@/components/app-components/profile-page-components/SpotifyCurrentState";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,13 +9,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { useSpotifyService } from "@/hooks/useSpotifyService";
 import api from "@/lib/api";
 import { newLyricsSchema } from "@/schemas/newLyricsSchema";
 import { changeAvailability } from "@/store/currentTrackSlice";
 import { RootState } from "@/store/store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChartNoAxesColumnIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -66,9 +63,9 @@ const ContributePage = () => {
       toast.success("Lyrics submitted successfully!");
       dispatch(changeAvailability());
       router.push("/");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error submitting lyrics:", error);
-      toast.error("Failed to submit lyrics.", error.message);
+      toast.error("Failed to submit lyrics.", );
     } finally {
       setLoading(false);
     }

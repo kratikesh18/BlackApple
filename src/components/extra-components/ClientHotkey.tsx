@@ -1,6 +1,6 @@
 "use client";
 import { toggleSearch } from "@/store/searchBarSlice";
-import React, { useEffect } from "react";
+import  { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 const ClientHotkey = () => {

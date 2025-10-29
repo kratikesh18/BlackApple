@@ -31,16 +31,17 @@ export async function GET(req: NextRequest) {
       { success: true, message: "fetched sucessfull", data: lyrics },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error fetching lyrics:", error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to fetch lyrics",
-        message: error?.message || "Internal server error",
-      },
-      { status: 500 }
-    );
+    if (error instanceof Error) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Failed to fetch lyrics",
+          message: error?.message || "Internal server error",
+        },
+        { status: 500 }
+      );
+    }
   }
 }

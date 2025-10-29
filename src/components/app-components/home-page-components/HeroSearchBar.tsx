@@ -8,7 +8,6 @@ import {
   MyTopArtistsResponse,
   RecentlyPlayedResponse,
 } from "@/types/RecentlyPlayedResponse";
-import SongTile from "../Tile-components/SongTile";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
 import { closeSearch } from "@/store/searchBarSlice";
@@ -83,7 +82,7 @@ export const HeroSearchBar = () => {
         if (!data.tracks?.items?.length && !data.artists?.items?.length) {
           setError("No results found.");
         }
-      } catch (err: any) {
+      } catch (err) {
         if (axios.isCancel(err)) return;
         setError("Failed to fetch results.");
       } finally {

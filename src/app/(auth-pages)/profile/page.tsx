@@ -7,12 +7,8 @@ import SongTile from "@/components/app-components/Tile-components/SongTile";
 import { useMySession } from "@/context/MySessionContext";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
-import {
-  MyTopArtistsResponse,
-  RecentlyPlayedResponse,
-} from "@/types/RecentlyPlayedResponse";
 import api from "@/lib/api";
 
 interface recentlyPlayedTrackType {
@@ -22,32 +18,21 @@ interface recentlyPlayedTrackType {
   artist: [{ artist_id: string; artist_name: string }];
 }
 
-[
-  {
-    id: "2oBG74gAocPMFv6Ij9ykdo",
-    name: "Seedhe Maut",
-    image: "https://i.scdn.co/image/ab6761610000e5ebdbfd70ecee8d42dfd5fbb29d",
-  },
-];
 interface topArtistsType {
   id: string;
   name: string;
   image: string;
 }
 const ProfilePage = () => {
-  const { session, status } = useMySession();
+  const { session } = useMySession();
 
-  if (!session) {
-    return <h1>anauthenticated</h1>;
-  }
-
-  const [recentlyPlayed, setRecentlyPlayed] = React.useState<
+  const [recentlyPlayed, setRecentlyPlayed] = useState<
     recentlyPlayedTrackType[] | null
   >(null);
 
-  const [myTopArtists, setMyTopArtists] = React.useState<
-    topArtistsType[] | null
-  >(null);
+  const [myTopArtists, setMyTopArtists] = useState<topArtistsType[] | null>(
+    null
+  );
 
   const getRecentlyPlayedSongs = useCallback(async () => {
     try {
@@ -64,8 +49,8 @@ const ProfilePage = () => {
 
   const getMyTopArtists = useCallback(async () => {
     try {
-      const response = await api.get("/getMyTopArtists");
-      console.log("Top artists response:", response.data);
+      const response = await api.get("/getMyTopArtist");
+      console.log("Top artists response:", response);
 
       if (response.data) {
         setMyTopArtists(response.data.data); // ✅ your ApiResponse wraps data inside `data`
@@ -78,12 +63,16 @@ const ProfilePage = () => {
   useEffect(() => {
     getMyTopArtists();
     getRecentlyPlayedSongs();
-  }, []);
+  }, [getMyTopArtists, getRecentlyPlayedSongs]);
+
+  if (!session || !session.user) {
+    return <h1>anauthenticated</h1>;
+  }
 
   return (
     <div className="flex gap-3 flex-col">
       {/* Header Section */}
-      <UserHeader name={session.user?.name!} image={session.user?.image!} />
+      <UserHeader name={session.user.name!} image={session.user.image!} />
 
       {/* Spotify Section */}
       <SectionWrapper title="Now Playing">

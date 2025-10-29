@@ -2,6 +2,9 @@
 
 import api from "@/lib/api";
 import { RootState } from "@/store/store";
+
+import { Edit } from "lucide-react";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, {
   useCallback,
@@ -21,24 +24,32 @@ export interface GrooveTabItem {
 }
 
 function GrooveTab() {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const { currentTrack } = useSelector(
     (state: RootState) => state.currentTrack
   );
 
-  const router = useRouter();
-  const pathname = usePathname();
   const [grooveData, setGrooveData] = useState<GrooveTabItem[]>([]);
   const [currentTime, setCurrentTime] = useState<number>(0);
+  // const [error, setError] = useState<string | null>(null);
 
   const lyricsContainerRef = useRef<HTMLDivElement>(null);
   const currentLineRef = useRef<HTMLDivElement | null>(null);
-  const startTimeRef = useRef<number>(Date.now());
+  const animationRef = useRef<number>(0);
+  const lastProgressRef = useRef<number>(0);
+  const startTimestampRef = useRef<number>(0);
 
-  // ---- Fetch lyrics data ----
+  // ---- Fetch lyrics data when track changes ----
   useEffect(() => {
     const fetchLyrics = async () => {
       try {
         if (!currentTrack?.gid) return;
+
+        // reset lyrics before fetching new ones
+        setGrooveData([]);
+        setCurrentTime(0);
 
         // Redirect only if not already on lyrics page
         if (pathname.startsWith("/lyrics")) {
@@ -50,31 +61,58 @@ function GrooveTab() {
 
         if (!data || !data.lyricsText) {
           toast.error("Lyrics not found.");
-          return;
+          // setError("Lyrics Not Found ");
+          throw new Error("Lyrics not available");
         }
 
         setGrooveData(data.lyricsText);
-      } catch (err: any) {
-        toast.error("Failed to fetch lyrics.");
-        console.error(err.message);
+        // setError(null);
+      } catch (err) {
+        if (err instanceof Error) {
+          toast.error("Failed to fetch lyrics.");
+          setGrooveData([]);
+          console.error(err.message);
+        }
       }
     };
 
     fetchLyrics();
   }, [currentTrack, pathname, router]);
 
-  // ---- Simulate playback time ----
+  // ---- Sync currentTime with Spotify playback ----
   useEffect(() => {
+    if (!currentTrack) return;
+
+    cancelAnimationFrame(animationRef.current!);
+
+    const { progressMs = 0, isPlaying, duration = 0 } = currentTrack;
+
+    lastProgressRef.current = progressMs;
+    startTimestampRef.current = Date.now();
+
     const updateTime = () => {
-      const now = Date.now();
-      const delta = (now - startTimeRef.current) / 1000; // seconds
-      setCurrentTime(delta);
-      requestAnimationFrame(updateTime);
+      if (isPlaying) {
+        const elapsed = Date.now() - startTimestampRef.current;
+        const newProgress = lastProgressRef.current + elapsed;
+        setCurrentTime(Math.min(newProgress / 1000, duration / 1000)); // in seconds
+      } else {
+        // paused → keep showing last known position
+        setCurrentTime(progressMs / 1000);
+        lastProgressRef.current = progressMs;
+        startTimestampRef.current = Date.now();
+      }
+
+      animationRef.current = requestAnimationFrame(updateTime);
     };
 
-    const animationFrame = requestAnimationFrame(updateTime);
-    return () => cancelAnimationFrame(animationFrame);
-  }, []);
+    animationRef.current = requestAnimationFrame(updateTime);
+    return () => cancelAnimationFrame(animationRef.current!);
+  }, [
+    currentTrack,
+    currentTrack?.isPlaying,
+    currentTrack?.progressMs,
+    currentTrack?.duration,
+  ]);
 
   // ---- Find current line ----
   const currentLine = useMemo(
@@ -99,7 +137,8 @@ function GrooveTab() {
   // ---- Jump to clicked line ----
   const handleLineClick = useCallback((startTime: number) => {
     setCurrentTime(startTime);
-    startTimeRef.current = Date.now() - startTime * 1000;
+    lastProgressRef.current = startTime * 1000;
+    startTimestampRef.current = Date.now();
   }, []);
 
   // ---- Format time ----
@@ -114,7 +153,25 @@ function GrooveTab() {
   }, []);
 
   if (!grooveData || grooveData.length === 0)
-    return <div className="text-gray-400">No groove data available.</div>;
+    return (
+      <div className="flex flex-col items-center justify-center text-center mt-40 space-y-6">
+        <div className="flex flex-col items-center space-y-3">
+          <h1 className="text-3xl font-semibold ">No Lyrics Found</h1>
+          <p className="text-gray-400 max-w-md">
+            Looks like this track doesn’t have any synced lyrics yet. Be the
+            first to contribute and help others enjoy the groove.
+          </p>
+        </div>
+
+        <Link
+          href={`/contribute/${currentTrack?.gid}`}
+          className="px-6 py-3 bg-purple-700 rounded-lg text-white font-medium shadow-md hover:shadow-blue-500/30 transition-all duration-300 flex  justify-center items-center gap-4 "
+        >
+          Start Writing Lyrics
+          <Edit />
+        </Link>
+      </div>
+    );
 
   return (
     <div

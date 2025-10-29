@@ -75,7 +75,7 @@ LyricsSchema.pre("save", function (next) {
   if (lyrics.lyricsText && lyrics.lyricsText.length > 0) {
     let startTime = 0;
     let endTime = 5;
-    lyrics.lyricsText.forEach((line, index) => {
+    lyrics.lyricsText.forEach((line) => {
       line.startTime = startTime;
       line.endTime = endTime;
       startTime = endTime + 1;

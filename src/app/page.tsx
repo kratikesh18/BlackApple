@@ -4,22 +4,19 @@ import GrooveTab from "@/components/app-components/home-page-components/GrooveTa
 import TabNavigation from "@/components/app-components/home-page-components/TabNavigation";
 import SectionWrapper from "@/components/app-components/profile-page-components/SectionWrapper";
 
-import { useLyricsService } from "@/hooks/useLyricsService";
-import { useSpotifyService } from "@/hooks/useSpotifyService";
-import { RootState } from "@/store/store";
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { toast } from "sonner";
+;
+import React, { useState } from "react";
+
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<"Groove" | "Explore">("Groove");
 
-  const { getCurrentlyPlaying, checkLyricsAvailability } = useSpotifyService();
-  const { getLyricsForCurrentTrack } = useLyricsService();
+  // const { getCurrentlyPlaying, checkLyricsAvailability } = useSpotifyService();
+  // const { getLyricsForCurrentTrack } = useLyricsService();
 
-  const { currentTrack } = useSelector(
-    (state: RootState) => state.currentTrack
-  );
+  // const { currentTrack } = useSelector(
+  //   (state: RootState) => state.currentTrack
+  // );
 
   // const [grooveData, setGrooveData] =
 
@@ -87,7 +84,7 @@ export default function Home() {
   // }, []);
 
   return (
-    <SectionWrapper className="border-2 min-h-max">
+    <SectionWrapper className="border-2 min-h-max container">
       {/* Tab Navigation */}
       <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
 

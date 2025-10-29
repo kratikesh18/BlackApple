@@ -1,20 +1,24 @@
-import { NextRequest } from "next/server";
 import { spotify } from "@/lib/spotify";
 import { ApiResponse } from "@/lib/apiResponse";
 import { DBConnect } from "@/lib/dbconnect";
 import LyricsModel from "@/models/lyrics.model";
+import type { PlaybackState } from "@spotify/web-api-ts-sdk";
 
-export async function GET(req: NextRequest) {
+interface CurrentlyPlayingSongType extends PlaybackState {
+
+
+}
+export async function GET() {
   try {
     const s = await spotify();
 
-    const currentlyPlayingSong: any = await s.player.getCurrentlyPlayingTrack();
+    const currentlyPlayingSong: CurrentlyPlayingSongType =
+      await s.player.getCurrentlyPlayingTrack();
 
     if (!currentlyPlayingSong || !currentlyPlayingSong.item) {
       return ApiResponse.success(null, "No song is currently playing", 200);
     }
 
-    //@ts-ignore
     const formatted = {
       gid: currentlyPlayingSong.item.id,
       name: currentlyPlayingSong.item.name,
@@ -27,6 +31,7 @@ export async function GET(req: NextRequest) {
       },
       progressMs: currentlyPlayingSong.progress_ms,
       isPlaying: currentlyPlayingSong.is_playing,
+      duration: currentlyPlayingSong.item.duration_ms,
     };
 
     //checking if the lyrics is available or not in the db
@@ -44,8 +49,10 @@ export async function GET(req: NextRequest) {
       "Currently playing song fetched successfully",
       200
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to fetch currently playing track:", error);
-    return ApiResponse.error("Failed to fetch currently playing track", 500);
+    if (error instanceof Error) {
+      return ApiResponse.error("Failed to fetch currently playing track", 500);
+    }
   }
 }

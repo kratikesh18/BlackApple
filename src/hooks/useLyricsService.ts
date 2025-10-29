@@ -1,5 +1,5 @@
 import api from "@/lib/api";
-import { AxiosResponse, ResponseType } from "axios";
+
 import { toast } from "sonner";
 
 const useLyricsService = () => {
@@ -11,8 +11,8 @@ const useLyricsService = () => {
       console.log(response.data);
 
       return response.data;
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      if (error instanceof Error) toast.error(error.message);
       console.log("Error in useLyricsHook", error);
     }
   }

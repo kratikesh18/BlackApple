@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 
 import { RootState } from "@/store/store";
+import { usePathname } from "next/navigation";
 
 const PLACEHOLDER =
   "data:image/svg+xml;%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500' viewBox='0 0 24 24'%3E%3Crect fill='%23343a40' width='100%25' height='100%25'/%3E%3Ctext x='50%25' y='52%25' fill='%23fff' font-size='10' font-family='Arial' dominant-baseline='middle' text-anchor='middle'%3ENO%20IMG%3C/text%3E%3C/svg%3E";
@@ -17,17 +18,18 @@ export type TrackType = {
     name: string;
     image: string;
   };
-  progressMs: string;
+  progressMs: number;
   isPlaying: boolean;
   isLyricsAvailable: boolean;
+  duration: number;
 };
 
 export default function SpotifyCurrentState() {
   // const { getCurrentlyPlaying } = useSpotifyService();
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
+  const [loading] = useState<boolean>(false);
+  // const [error, setError] = useState<string | null>(null);
+  const pathname = usePathname();
   const { currentTrack } = useSelector(
     (state: RootState) => state.currentTrack
   );
@@ -54,18 +56,16 @@ export default function SpotifyCurrentState() {
             <div className="h-4 bg-zinc-800 rounded w-3/4 mb-2" />
             <div className="h-3 bg-zinc-800 rounded w-1/2" />
           </div>
-        ) : error ? (
-          <p className="text-sm text-red-400">{error}</p>
         ) : currentTrack ? (
           <>
             <h4 className="text-sm md:text-base font-semibold text-white truncate">
               {currentTrack.name}
             </h4>
-            <p className="text-xs md:text-sm text-gray-300 truncate">
+            <p className="text-base md:text-sm text-gray-300 truncate">
               {currentTrack.artists.map((a) => a).join(", ")}
             </p>
-            <p className="text-xs text-gray-400 truncate">
-              Album: {currentTrack.album.name}
+            <p className="text-base text-gray-400 truncate">
+              {currentTrack.album.name}
             </p>
           </>
         ) : (
@@ -77,22 +77,27 @@ export default function SpotifyCurrentState() {
 
       {/* Actions */}
       <div className="flex-shrink-0">
-        <div></div>
-        {currentTrack && currentTrack.isLyricsAvailable ? (
-          <Link
-            href={`/lyrics/${encodeURIComponent(currentTrack.gid)}`}
-            className="inline-block bg-purple-700 hover:bg-purple-800 text-white text-xs md:text-sm px-3 py-2 rounded-md"
-          >
-            Show Lyrics
-          </Link>
-        ) : (
-          <Link
-            className="inline-block bg-gray-700 text-white text-xs md:text-sm px-3 py-2 rounded-md"
-            href={`/contribute/${currentTrack.gid}`}
-          >
-            contribute
-          </Link>
-        )}
+        {currentTrack ? (
+          currentTrack.isLyricsAvailable ? (
+            // ✅ Show "Show Lyrics" button if lyrics are available
+            <Link
+              href={`/lyrics/${encodeURIComponent(currentTrack.gid)}`}
+              className="inline-block bg-purple-700 hover:bg-purple-800 text-white text-xs md:text-sm px-3 py-2 rounded-md transition"
+            >
+              Show Lyrics
+            </Link>
+          ) : (
+            // ✅ Show "Contribute" button only if not already on the contribute page
+            !pathname.startsWith("/contribute") && (
+              <Link
+                href={`/contribute/${encodeURIComponent(currentTrack.gid)}`}
+                className="inline-block bg-gray-700 hover:bg-gray-800 text-white text-xs md:text-sm px-3 py-2 rounded-md transition"
+              >
+                Contribute
+              </Link>
+            )
+          )
+        ) : null}
       </div>
     </div>
   );

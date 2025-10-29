@@ -4,7 +4,7 @@ import { ApiResponse } from "@/lib/apiResponse";
 
 import { spotify } from "@/lib/spotify";
 
-export async function GET(req: Request) {
+export async function GET() {
   //getting the server session
 
   try {
@@ -37,7 +37,9 @@ export async function GET(req: Request) {
       "Recently Played songs fetched successfully",
       200
     );
-  } catch (error: any) {
-    return ApiResponse.error(`Failed : ${error.message}`, 500);
+  } catch (error) {
+    if (error instanceof Error) {
+      return ApiResponse.error(`Failed : ${error.message}`, 500);
+    }
   }
 }

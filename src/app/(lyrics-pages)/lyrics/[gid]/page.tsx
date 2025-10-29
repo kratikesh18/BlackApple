@@ -1,24 +1,17 @@
 "use client";
 import GrooveTab from "@/components/app-components/home-page-components/GrooveTab";
 import ArtistTile from "@/components/app-components/Tile-components/ArtistTile";
-import api from "@/lib/api";
 import { RootState } from "@/store/store";
-import { useParams, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+
+import React from "react";
 import { useSelector } from "react-redux";
-import { toast } from "sonner";
 
 function LyricsPage() {
-  const { gid } = useParams();
-
   const { currentTrack } = useSelector(
     (state: RootState) => state.currentTrack
   );
 
   //api call for finding the Lyrics
-
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   return (
     <div className="flex lg:flex-row gap-3 flex-col-reverse p-3">
