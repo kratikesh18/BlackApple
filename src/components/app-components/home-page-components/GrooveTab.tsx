@@ -1,9 +1,8 @@
 "use client";
-
+import { Button } from "@/components/ui/button";
 import api from "@/lib/api";
 import { RootState } from "@/store/store";
-
-import { Edit } from "lucide-react";
+import { Edit, Play } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, {
@@ -24,24 +23,33 @@ export interface GrooveTabItem {
 }
 
 function GrooveTab() {
+  //fetching the pathnames for the easy routing
   const router = useRouter();
   const pathname = usePathname();
 
+  //accessing the state from the store
   const { currentTrack } = useSelector(
     (state: RootState) => state.currentTrack
   );
 
+  //groove data initially empty array
   const [grooveData, setGrooveData] = useState<GrooveTabItem[]>([]);
+
+  //starting of the song intiallly zero
   const [currentTime, setCurrentTime] = useState<number>(0);
+
   // const [error, setError] = useState<string | null>(null);
 
+  //references to the lyrics inner components
   const lyricsContainerRef = useRef<HTMLDivElement>(null);
   const currentLineRef = useRef<HTMLDivElement | null>(null);
+
   const animationRef = useRef<number>(0);
+
   const lastProgressRef = useRef<number>(0);
   const startTimestampRef = useRef<number>(0);
 
-  // ---- Fetch lyrics data when track changes ----
+  //  Fetch lyrics data when track changes
   useEffect(() => {
     const fetchLyrics = async () => {
       try {
@@ -79,7 +87,7 @@ function GrooveTab() {
     fetchLyrics();
   }, [currentTrack, pathname, router]);
 
-  // ---- Sync currentTime with Spotify playback ----
+  // Sync currentTime with Spotify playback
   useEffect(() => {
     if (!currentTrack) return;
 
@@ -170,6 +178,11 @@ function GrooveTab() {
           Start Writing Lyrics
           <Edit />
         </Link>
+
+        <Button variant={"ghost"} className="bg-green-600 rounded-full">
+          Playing on spotify click me
+          <Play />
+        </Button>
       </div>
     );
 

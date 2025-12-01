@@ -1,9 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-
 import { useSelector } from "react-redux";
-
 import { RootState } from "@/store/store";
 import { usePathname } from "next/navigation";
 
@@ -22,21 +20,104 @@ export type TrackType = {
   isPlaying: boolean;
   isLyricsAvailable: boolean;
   duration: number;
+  remainingTime: number;
 };
 
 export default function SpotifyCurrentState() {
-  // const { getCurrentlyPlaying } = useSpotifyService();
-
   const [loading] = useState<boolean>(false);
-  // const [error, setError] = useState<string | null>(null);
   const pathname = usePathname();
+
   const { currentTrack } = useSelector(
     (state: RootState) => state.currentTrack
   );
 
+  // ---- State for live progress ----
+  const [progress, setProgress] = useState<number>(
+    currentTrack?.progressMs || 0
+  );
+
+
+  const animationRef = useRef<number | null>(null);
+  const lastTimestampRef = useRef<number | null>(null);
+  const accumulatedRef = useRef<number>(currentTrack?.progressMs || 0);
+
+  // ---- Animate progress bar (robust rAF implementation) ----
+  useEffect(() => {
+    // if no track -> clear and exit
+    if (!currentTrack) {
+      setProgress(0);
+      accumulatedRef.current = 0;
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      return;
+    }
+
+    // initialize values from currentTrack
+    const { progressMs = 0, duration = 0, isPlaying } = currentTrack;
+    accumulatedRef.current = progressMs;
+    setProgress(progressMs);
+    lastTimestampRef.current = null;
+
+    // cancel any previous animation
+    if (animationRef.current) cancelAnimationFrame(animationRef.current);
+
+    const step = (timestamp: number) => {
+      // set initial timestamp
+      if (lastTimestampRef.current === null)
+        lastTimestampRef.current = timestamp;
+      const delta = timestamp - lastTimestampRef.current;
+      lastTimestampRef.current = timestamp;
+
+      if (isPlaying) {
+        // advance accumulated progress by delta ms
+        accumulatedRef.current = Math.min(
+          accumulatedRef.current + delta,
+          duration
+        );
+        setProgress(accumulatedRef.current);
+      } else {
+        // when paused, keep the reported progress in sync with source
+        accumulatedRef.current = progressMs;
+        setProgress(progressMs);
+      }
+
+      // continue animating only if track not finished
+      if (accumulatedRef.current < duration) {
+        animationRef.current = requestAnimationFrame(step);
+      } else {
+        // ensure final value at end
+        setProgress(duration);
+      }
+    };
+
+    animationRef.current = requestAnimationFrame(step);
+
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+      lastTimestampRef.current = null;
+    };
+    // rerun when the reference to currentTrack changes
+  }, [currentTrack]);
+
   if (!currentTrack) {
     return <div>NO Song Playing on Spotify</div>;
   }
+
+  // ---- Calculate progress percentage ----
+  const progressPercent =
+    currentTrack.duration > 0
+      ? Math.min((progress / currentTrack.duration) * 100, 100)
+      : 0;
+
+  // ---- Helper for formatting time (mm:ss) ----
+  const formatTime = (ms: number) => {
+    const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+    const min = Math.floor(totalSeconds / 60)
+      .toString()
+      .padStart(2, "0");
+    const sec = (totalSeconds % 60).toString().padStart(2, "0");
+    return `${min}:${sec}`;
+  };
 
   return (
     <div className="container bg-gray-700/40 border border-white/6 rounded-lg p-4 md:p-5 flex flex-col md:flex-row items-center gap-4">
@@ -49,55 +130,61 @@ export default function SpotifyCurrentState() {
         />
       </div>
 
-      {/* Info */}
-      <div className="flex-1 min-w-0">
+      {/* Info + Progress */}
+      <div className="flex-1 min-w-0 w-full">
         {loading ? (
           <div className="animate-pulse">
             <div className="h-4 bg-zinc-800 rounded w-3/4 mb-2" />
             <div className="h-3 bg-zinc-800 rounded w-1/2" />
           </div>
-        ) : currentTrack ? (
+        ) : (
           <>
             <h4 className="text-sm md:text-base font-semibold text-white truncate">
               {currentTrack.name}
             </h4>
             <p className="text-base md:text-sm text-gray-300 truncate">
-              {currentTrack.artists.map((a) => a).join(", ")}
+              {currentTrack.artists.join(", ")}
             </p>
             <p className="text-base text-gray-400 truncate">
               {currentTrack.album.name}
             </p>
+
+            {/* Progress bar */}
+            <div className="mt-3 w-full">
+              <div className="flex justify-between text-xs text-gray-400 mb-1">
+                <span>{formatTime(progress)}</span>
+                <span>{formatTime(currentTrack.duration)}</span>
+              </div>
+              <div className="h-2 bg-gray-600 rounded-full overflow-hidden">
+                <div
+                  className="h-2 bg-green-500 transition-[width] duration-200"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+            </div>
           </>
-        ) : (
-          <p className="text-sm text-gray-400">
-            No track is currently playing.
-          </p>
         )}
       </div>
 
       {/* Actions */}
       <div className="flex-shrink-0">
-        {currentTrack ? (
-          currentTrack.isLyricsAvailable ? (
-            // ✅ Show "Show Lyrics" button if lyrics are available
+        {currentTrack.isLyricsAvailable ? (
+          <Link
+            href={`/lyrics/${encodeURIComponent(currentTrack.gid)}`}
+            className="inline-block bg-purple-700 hover:bg-purple-800 text-white text-xs md:text-sm px-3 py-2 rounded-md transition"
+          >
+            Show Lyrics
+          </Link>
+        ) : (
+          !pathname.startsWith("/contribute") && (
             <Link
-              href={`/lyrics/${encodeURIComponent(currentTrack.gid)}`}
-              className="inline-block bg-purple-700 hover:bg-purple-800 text-white text-xs md:text-sm px-3 py-2 rounded-md transition"
+              href={`/contribute/${encodeURIComponent(currentTrack.gid)}`}
+              className="inline-block bg-gray-700 hover:bg-gray-800 text-white text-xs md:text-sm px-3 py-2 rounded-md transition"
             >
-              Show Lyrics
+              Contribute
             </Link>
-          ) : (
-            // ✅ Show "Contribute" button only if not already on the contribute page
-            !pathname.startsWith("/contribute") && (
-              <Link
-                href={`/contribute/${encodeURIComponent(currentTrack.gid)}`}
-                className="inline-block bg-gray-700 hover:bg-gray-800 text-white text-xs md:text-sm px-3 py-2 rounded-md transition"
-              >
-                Contribute
-              </Link>
-            )
           )
-        ) : null}
+        )}
       </div>
     </div>
   );

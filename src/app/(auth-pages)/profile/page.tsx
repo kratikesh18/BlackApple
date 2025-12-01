@@ -40,7 +40,7 @@ const ProfilePage = () => {
       console.log("Recently played response:", response.data);
 
       if (response.data) {
-        setRecentlyPlayed(response.data.data); // ✅ your ApiResponse wraps data inside `data`
+        setRecentlyPlayed(response.data.data);
       }
     } catch (error) {
       console.error("Error fetching recently played songs:", error);
@@ -53,7 +53,7 @@ const ProfilePage = () => {
       console.log("Top artists response:", response);
 
       if (response.data) {
-        setMyTopArtists(response.data.data); // ✅ your ApiResponse wraps data inside `data`
+        setMyTopArtists(response.data.data);
       }
     } catch (error) {
       console.error("Error fetching top artists:", error);

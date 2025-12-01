@@ -1,14 +1,11 @@
 "use client";
-
 import GrooveTab from "@/components/app-components/home-page-components/GrooveTab";
 import TabNavigation from "@/components/app-components/home-page-components/TabNavigation";
 import SectionWrapper from "@/components/app-components/profile-page-components/SectionWrapper";
-
-;
 import React, { useState } from "react";
 
-
 export default function Home() {
+  
   const [activeTab, setActiveTab] = useState<"Groove" | "Explore">("Groove");
 
   // const { getCurrentlyPlaying, checkLyricsAvailability } = useSpotifyService();

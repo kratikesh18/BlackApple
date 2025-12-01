@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect} from "react";
 import Navbar from "../app-components/Navbar";
 import { Toaster } from "sonner";
 import { usePathname } from "next/navigation";
@@ -32,33 +32,42 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     }
   }, [dispatch]);
 
-  const [remainingTime, setRemainingTime] = useState(30000);
   const { currentTrack } = useSelector(
     (state: RootState) => state.currentTrack
   );
+
   useEffect(() => {
+    
     getCurrentlyPlayingSong();
 
     //already got the lyrics informatin with the updated state of store
+    let interval = undefined;
+    console.log("printing currenttrack ", currentTrack);
 
-    // Convert to minutes and seconds
-    const minutes = Math.floor(remainingTime / 60000);
-    const seconds = Math.floor((remainingTime % 60000) / 1000);
+    if (!currentTrack) {
+      console.log("No song playing .. so not remaining time");
+    }
+    if (currentTrack) {
+      // Convert to minutes and seconds
+      const minutes = Math.floor(currentTrack.remainingTime / 60000);
+      const seconds = Math.floor((currentTrack.remainingTime % 60000) / 1000);
 
-    // Format nicely (e.g., "4:35")
-    const formattedTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+      // Format nicely (e.g., "4:35")
+      const formattedTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
 
-    console.log("Remaining time:", formattedTime);
-    const interval = setInterval(() => {
-      getCurrentlyPlayingSong();
-    }, remainingTime);
+      console.log("Remaining time:", formattedTime);
+
+      interval = setInterval(() => {
+        getCurrentlyPlayingSong();
+      }, currentTrack.remainingTime);
+    }
 
     return () => clearInterval(interval);
   }, [getCurrentlyPlayingSong]);
 
   return (
     <>
-      <header className="h-[80px] border text-white flex  items-center justify-center">
+      <header className="h-[80px]  text-white flex  items-center justify-center">
         <Navbar />
       </header>
 

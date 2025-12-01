@@ -4,10 +4,7 @@ import { DBConnect } from "@/lib/dbconnect";
 import LyricsModel from "@/models/lyrics.model";
 import type { PlaybackState } from "@spotify/web-api-ts-sdk";
 
-interface CurrentlyPlayingSongType extends PlaybackState {
-
-
-}
+interface CurrentlyPlayingSongType extends PlaybackState {}
 export async function GET() {
   try {
     const s = await spotify();
@@ -32,6 +29,9 @@ export async function GET() {
       progressMs: currentlyPlayingSong.progress_ms,
       isPlaying: currentlyPlayingSong.is_playing,
       duration: currentlyPlayingSong.item.duration_ms,
+      remainingTime:
+        currentlyPlayingSong.item.duration_ms -
+        currentlyPlayingSong.progress_ms,
     };
 
     //checking if the lyrics is available or not in the db
