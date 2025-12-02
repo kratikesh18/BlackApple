@@ -7,15 +7,7 @@ import AuthProvider from "@/context/AuthProvider";
 import SessionLayout from "@/context/SessionLayout";
 import { MainLayout } from "@/components/layouts/MainLayout";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "blackApple : A Lyrics Libarary",
@@ -32,8 +24,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} mx-auto antialiased min-h-screen max-h-screen
-      overflow-y-auto scrollbar-none bg-gradient-to-br from-gray-900 via-purple-950 to-black text-white flex flex-col h-screen `}
+        className={` mx-auto antialiased min-h-screen max-h-screen
+      overflow-y-auto scrollbar-none bg-gradient-to-br from-gray-900 via-blue-950 to-black text-white flex flex-col h-screen `}
       >
         <AuthProvider>
           <SessionLayout>

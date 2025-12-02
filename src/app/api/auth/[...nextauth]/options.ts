@@ -16,10 +16,12 @@ const scopes = [
   "playlist-read-private",
 ].join(" ");
 
+type NewType = any;
+
 /**
  * Refresh Spotify Access Token
  */
-async function refreshAccessToken(token: any) {
+async function refreshAccessToken(token: NewType) {
   try {
     const url = "https://accounts.spotify.com/api/token";
 

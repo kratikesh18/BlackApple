@@ -10,7 +10,7 @@ export type TrackType = {
   progress: string;
 };
 
-export interface ApiResponseType<T = {}> {
+export interface ApiResponseType<T > {
   success: boolean;
   message: string;
   data?: T;

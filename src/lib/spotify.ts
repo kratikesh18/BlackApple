@@ -12,7 +12,7 @@ export async function spotify() {
     throw new Error("No active Spotify session found");
   }
 
-  //@ts-ignore
+  //@ts-expect-error
   return SpotifyApi.withAccessToken(client_id, {
     access_token: session.accessToken as string,
   });
