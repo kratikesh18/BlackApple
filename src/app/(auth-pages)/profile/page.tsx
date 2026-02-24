@@ -8,7 +8,6 @@ import { useMySession } from "@/context/MySessionContext";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 import React, { useCallback, useEffect, useState } from "react";
-
 import api from "@/lib/api";
 
 interface recentlyPlayedTrackType {
@@ -23,7 +22,11 @@ interface topArtistsType {
   name: string;
   image: string;
 }
+
+
+
 const ProfilePage = () => {
+
   const { session } = useMySession();
 
   const [recentlyPlayed, setRecentlyPlayed] = useState<
@@ -31,7 +34,7 @@ const ProfilePage = () => {
   >(null);
 
   const [myTopArtists, setMyTopArtists] = useState<topArtistsType[] | null>(
-    null
+    null,
   );
 
   const getRecentlyPlayedSongs = useCallback(async () => {
@@ -43,7 +46,9 @@ const ProfilePage = () => {
         setRecentlyPlayed(response.data.data);
       }
     } catch (error) {
-      console.error("Error fetching recently played songs:", error);
+      if (error instanceof Error)
+        console.warn("Error fetching recently played songs:", error.message);
+      else console.warn("Error fetching recently played songs:", error);
     }
   }, []);
 
@@ -56,7 +61,8 @@ const ProfilePage = () => {
         setMyTopArtists(response.data.data);
       }
     } catch (error) {
-      console.error("Error fetching top artists:", error);
+      if (error instanceof Error) console.warn("Error fetching top artists:", error.message)
+      console.warn("Error fetching top artists:", error);
     }
   }, []);
 

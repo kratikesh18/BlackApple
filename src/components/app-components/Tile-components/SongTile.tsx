@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
@@ -26,6 +27,7 @@ function SongTile({ name, albumArt, artist }: SongTileProps) {
           alt={name}
           loading="lazy"
           className="w-full h-28 sm:h-32 md:h-36 object-cover rounded-md shadow-sm"
+
         />
       </Link>
 

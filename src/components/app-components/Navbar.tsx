@@ -24,7 +24,7 @@ const Navbar = () => {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   return (
-    <nav className="container rounded-lg py-3 px-8 bg-gray-200/10 bg-opacity-10 border border-white/20 flex gap-4 items-center justify-between ">
+    <nav className="rounded-lg py-3 px-8 bg-gray-200/10 bg-opacity-10 border mt-2 border-white/20 flex gap-4 items-center justify-between ">
       {/* add icon */}
       <div>
         <Link

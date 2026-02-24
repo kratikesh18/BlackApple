@@ -1,10 +1,11 @@
 import { ApiResponse } from "@/lib/apiResponse";
 
-import { spotify } from "@/lib/spotify";
+import { getSpotifyClient } from "@/lib/spotify";
 
 export async function GET() {
   try {
-    const s = await spotify();
+    const s = await getSpotifyClient();    // we can create a seperate function exporting this only instance
+                                  // to reduce the multiple instance and save memory and call
 
     const topArtists = await s.currentUser.topItems(
       "artists",

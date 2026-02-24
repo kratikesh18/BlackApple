@@ -20,8 +20,8 @@ function TabNavigation({ activeTab, setActiveTab }: TabNavigationProps) {
           className={`w-28 sm:w-32 px-3 py-2 rounded-lg font-semibold transition-colors duration-150
             ${
               activeTab === tab
-                ? "bg-purple-700 text-white "
-                : "bg-gray-800 text-gray-300 hover:bg-purple-800/80 hover:text-white"
+                ? "bg-accent-foreground text-white "
+                : "bg-gray-800 text-gray-300  hover:text-white"
             }
           `}
           aria-current={activeTab === tab ? "page" : undefined}

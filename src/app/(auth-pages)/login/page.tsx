@@ -11,7 +11,10 @@ const LoginPage: React.FC = () => {
     try {
       await signIn("spotify");
     } catch (error) {
-      console.error("Login failed:", error);
+      if(error instanceof Error){
+        console.warn("Login failed:", error.message);
+      }
+      console.warn("Login failed:", error);
     }
   };
 

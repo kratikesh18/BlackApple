@@ -1,8 +1,7 @@
 "use server";
 
 import { ApiResponse } from "@/lib/apiResponse";
-
-import { spotify } from "@/lib/spotify";
+import { getSpotifyClient} from "@/lib/spotify";
 
 export async function GET() {
   //getting the server session
@@ -10,7 +9,7 @@ export async function GET() {
   try {
     //as of we are making the request using fetch api then we must have to covert into json first
 
-    const s = await spotify();
+    const s = await getSpotifyClient();
 
     const recentlyPlayedSongs = await s.player.getRecentlyPlayedTracks(5);
 

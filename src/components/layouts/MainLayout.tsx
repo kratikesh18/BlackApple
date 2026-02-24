@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect} from "react";
+import React, { useCallback, useEffect } from "react";
 import Navbar from "../app-components/Navbar";
 import { Toaster } from "sonner";
 import { usePathname } from "next/navigation";
@@ -12,34 +12,36 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCurrentTrack } from "@/store/currentTrackSlice";
 import { RootState } from "@/store/store";
 import { AxiosError } from "axios";
+import { useMySession } from "@/context/MySessionContext";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const dispatch = useDispatch();
+  const { session } = useMySession();
+
+  const { currentTrack } = useSelector(
+    (state: RootState) => state.currentTrack,
+  );
 
   const getCurrentlyPlayingSong = useCallback(async () => {
     try {
       const response = (await api.get("/getCurrentlyPlayingSong")).data;
       const data: TrackType = response.data;
+
       // console.log("Currently playing data:", data);
       dispatch(setCurrentTrack(data));
     } catch (error) {
       if (error instanceof AxiosError) {
         console.log("Error fetching : ", error);
       }
+
       if (error instanceof Error)
         console.log("Error fetching currently playing song:", error.message);
     }
-  }, [dispatch]);
-
-  const { currentTrack } = useSelector(
-    (state: RootState) => state.currentTrack
-  );
+  }, [dispatch, session]);
 
   useEffect(() => {
-    
     getCurrentlyPlayingSong();
-
     //already got the lyrics informatin with the updated state of store
     let interval = undefined;
     console.log("printing currenttrack ", currentTrack);
@@ -47,6 +49,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     if (!currentTrack) {
       console.log("No song playing .. so not remaining time");
     }
+
     if (currentTrack) {
       // Convert to minutes and seconds
       const minutes = Math.floor(currentTrack.remainingTime / 60000);
@@ -67,23 +70,25 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <header className="h-[80px]  text-white flex  items-center justify-center">
+      <header>
         <Navbar />
       </header>
 
-      <main className="flex-1 flex items-center justify-center">
+      <main
+        className="flex-1 border-1 overflow-y-scroll
+scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent"
+      >
         {children}
       </main>
 
-      <footer>
-        {/* Hide SpotifyCurrentState on /profile and /lyrics/:gid */}
+      <footer className="w-full border ">
         {!(pathname === "/profile" || pathname.startsWith("/lyrics")) && (
           <SpotifyCurrentState />
         )}
-
-        <HotKeyLayout />
-        <Toaster />
+        
       </footer>
+      <HotKeyLayout />
+      <Toaster position="top-right" theme="dark" closeButton duration={500} />
     </>
   );
 };

@@ -5,7 +5,7 @@ import SectionWrapper from "@/components/app-components/profile-page-components/
 import React, { useState } from "react";
 
 export default function Home() {
-  
+
   const [activeTab, setActiveTab] = useState<"Groove" | "Explore">("Groove");
 
   // const { getCurrentlyPlaying, checkLyricsAvailability } = useSpotifyService();
@@ -81,7 +81,7 @@ export default function Home() {
   // }, []);
 
   return (
-    <SectionWrapper className="border-2 min-h-max container">
+    <SectionWrapper className="">
       {/* Tab Navigation */}
       <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
 

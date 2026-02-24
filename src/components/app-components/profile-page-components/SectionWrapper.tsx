@@ -19,6 +19,9 @@ function SectionWrapper({ children, title, className }: SectionWrapperProps) {
       )}
       <div className="my-1 md:my-2">{children}</div>
     </section>
+    // <section>
+    //   {children}
+    // </section>
   );
 }
 

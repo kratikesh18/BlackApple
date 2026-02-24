@@ -37,16 +37,18 @@ async function refreshAccessToken(token: NewType) {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-      }
+      },
     );
 
     const data = response.data;
 
     // Debug log
-    console.log("🎧 Spotify token refreshed successfully:", {
-      newAccessToken: data.access_token ? "✅ Received" : "❌ Missing",
-      expires_in: data.expires_in,
-    });
+    console.log("🎧 Spotify token refreshed successfully:",
+      {
+        newAccessToken: data.access_token ? "✅ Received" : "❌ Missing",
+        expires_in: data.expires_in,
+      }
+    );
 
     return {
       ...token,
@@ -56,9 +58,13 @@ async function refreshAccessToken(token: NewType) {
     };
   } catch (error) {
     if (error instanceof Error) {
-      console.error("❌ Error refreshing Spotify access token:", error.message);
+      console.warn("Error refreshing Spotify access token:", error.message);
+    }else{
+            console.warn(
+              "Error refreshing Spotify access token:",
+              error
+            );
     }
-
     return {
       ...token,
       error: "RefreshAccessTokenError",
@@ -70,6 +76,7 @@ async function refreshAccessToken(token: NewType) {
  * NextAuth Configuration
  */
 export const authOptions: NextAuthOptions = {
+
   providers: [
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID!,
@@ -89,7 +96,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    /**
+    /*
      * SignIn Callback - Create or update user in DB
      */
     async signIn({ account, profile }) {
@@ -104,24 +111,28 @@ export const authOptions: NextAuthOptions = {
           };
 
           if (!spotifyProfile.email) {
-            console.error("⚠️ Spotify did not return an email.");
+            console.warn("⚠️ Spotify did not return an email.");
             return false;
           }
 
           let user = await User.findOne({ spotifyId: spotifyProfile.id });
-
+          //if user is not found then create new entry
           if (!user) {
             user = new User({
               username: spotifyProfile.display_name || "Unknown User",
               email: spotifyProfile.email,
               spotifyId: spotifyProfile.id,
             });
+
             await user.save();
-            console.log("✅ New user created:", user._id);
+            console.log("New user created:", user._id);
+
           } else {
+            //if user exists with same email and not matches with spotify email then update it with spotify email
             if (user.email !== spotifyProfile.email) {
               user.email = spotifyProfile.email;
             }
+            //username changed
             if (user.username !== spotifyProfile.display_name) {
               user.username = spotifyProfile.display_name || user.username;
             }
@@ -129,7 +140,8 @@ export const authOptions: NextAuthOptions = {
             console.log("🔄 Existing user updated:", user._id);
           }
         } catch (error) {
-          console.error("❌ Error in signIn callback:", error);
+
+          console.warn("❌ Error in signIn callback:", error);
           return false;
         }
       }
@@ -142,6 +154,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, account, user }) {
       // On initial login
       if (account) {
+        console.log("printing the account id ", account.userId);
         return {
           accessToken: account.access_token,
           refreshToken: account.refresh_token,

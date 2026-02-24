@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
   */
   try {
     await DBConnect();
+    
     const body = await req.json();
     const { rawString: rawText, global_id } = body;
 

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-if (!process.env.MONGODB_URI && process.env.NODE_ENV !== 'production') {
+if (!process.env.MONGODB_URI && process.env.NODE_ENV !== "production") {
   console.warn("Warning: MONGODB_URI environment variable is not defined");
 }
 
@@ -23,9 +23,13 @@ const DBConnect = async () => {
     // console.log("Connecting to the database...");
     // connection.isConnected = 1;
   } catch (error) {
-    console.error("Error connecting to the database:", error);
+    if (error instanceof Error) {
+      console.warn("Error connecting to the database:", error.message);
+    } else {
+      console.warn("Error connecting to the database:", error);
+    }
     // process.exit(1);
-    throw error
+    throw error;
   }
 };
 

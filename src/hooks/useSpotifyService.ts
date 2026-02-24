@@ -4,6 +4,9 @@
 // import { useDispatch } from "react-redux";
 // import { AxiosError } from "axios";
 
+import { getSpotifyClient } from "@/lib/spotify"
+import { useEffect, useState } from "react";
+
 // type LyricsCheckResponse = {
 //   success: boolean;
 //   data?: any;
@@ -81,3 +84,47 @@
 
 //   return { getCurrentlyPlaying, checkLyricsAvailability, submitLyrics };
 // };
+
+
+
+
+//outer function
+const useSpotifyService = () => {
+
+  const [spotifyClient, setSpotifyClient] = useState<any>(null);
+
+  useEffect(()=>{
+
+    const initSpotify = async()=>{
+          try {
+              const s = await getSpotifyClient();
+              setSpotifyClient(s);
+          } catch (error) {
+            if(error instanceof Error){
+              console.log("Failed to connect client.", error.message )
+            }
+          }
+    }
+     initSpotify();
+  },[])
+
+
+
+  //inner functions
+  const getDetailsForIdentifier = async(identifier:string) =>{
+    if(identifier == null || identifier == ""){
+      throw new Error("Identifer needed");
+    }
+      const detailsOfsong = await spotifyClient.tracks.get(identifier);
+      console.log("printing details on identifier", detailsOfsong);
+  }
+
+
+  //exporting functions
+  return {
+    getDetailsForIdentifier
+  }
+}
+
+export { useSpotifyService};
+

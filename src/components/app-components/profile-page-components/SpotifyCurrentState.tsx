@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 const PLACEHOLDER =
   "data:image/svg+xml;%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500' viewBox='0 0 24 24'%3E%3Crect fill='%23343a40' width='100%25' height='100%25'/%3E%3Ctext x='50%25' y='52%25' fill='%23fff' font-size='10' font-family='Arial' dominant-baseline='middle' text-anchor='middle'%3ENO%20IMG%3C/text%3E%3C/svg%3E";
@@ -28,14 +29,13 @@ export default function SpotifyCurrentState() {
   const pathname = usePathname();
 
   const { currentTrack } = useSelector(
-    (state: RootState) => state.currentTrack
+    (state: RootState) => state.currentTrack,
   );
 
   // ---- State for live progress ----
   const [progress, setProgress] = useState<number>(
-    currentTrack?.progressMs || 0
+    currentTrack?.progressMs || 0,
   );
-
 
   const animationRef = useRef<number | null>(null);
   const lastTimestampRef = useRef<number | null>(null);
@@ -47,14 +47,20 @@ export default function SpotifyCurrentState() {
     if (!currentTrack) {
       setProgress(0);
       accumulatedRef.current = 0;
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
       return;
     }
 
     // initialize values from currentTrack
     const { progressMs = 0, duration = 0, isPlaying } = currentTrack;
+
     accumulatedRef.current = progressMs;
+
     setProgress(progressMs);
+
     lastTimestampRef.current = null;
 
     // cancel any previous animation
@@ -71,7 +77,7 @@ export default function SpotifyCurrentState() {
         // advance accumulated progress by delta ms
         accumulatedRef.current = Math.min(
           accumulatedRef.current + delta,
-          duration
+          duration,
         );
         setProgress(accumulatedRef.current);
       } else {
@@ -120,70 +126,69 @@ export default function SpotifyCurrentState() {
   };
 
   return (
-    <div className="container bg-gray-700/40 border border-white/6 rounded-lg p-4 md:p-5 flex flex-col md:flex-row items-center gap-4">
+    <div className="bg-accent-foreground border border-white/10 rounded-lg p-4 flex flex-col md:flex-row items-center gap-4 ">
       {/* Artwork */}
+
       <div className="flex-shrink-0">
         <img
           src={currentTrack.album.image || PLACEHOLDER}
-          alt={currentTrack.album.name || "No track"}
+          alt={currentTrack.album.name}
           className="h-20 w-20 md:h-24 md:w-24 object-cover rounded-md"
         />
       </div>
 
-      {/* Info + Progress */}
-      <div className="flex-1 min-w-0 w-full">
-        {loading ? (
-          <div className="animate-pulse">
-            <div className="h-4 bg-zinc-800 rounded w-3/4 mb-2" />
-            <div className="h-3 bg-zinc-800 rounded w-1/2" />
-          </div>
-        ) : (
-          <>
-            <h4 className="text-sm md:text-base font-semibold text-white truncate">
-              {currentTrack.name}
-            </h4>
-            <p className="text-base md:text-sm text-gray-300 truncate">
-              {currentTrack.artists.join(", ")}
-            </p>
-            <p className="text-base text-gray-400 truncate">
-              {currentTrack.album.name}
-            </p>
+      {/* Info */}
 
-            {/* Progress bar */}
-            <div className="mt-3 w-full">
-              <div className="flex justify-between text-xs text-gray-400 mb-1">
-                <span>{formatTime(progress)}</span>
-                <span>{formatTime(currentTrack.duration)}</span>
-              </div>
-              <div className="h-2 bg-gray-600 rounded-full overflow-hidden">
-                <div
-                  className="h-2 bg-green-500 transition-[width] duration-200"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-            </div>
-          </>
-        )}
+      <div className="flex-1 min-w-0 w-full">
+        <h4 className="text-lg font-semibold text-white truncate">
+          {currentTrack.name}
+        </h4>
+
+        <p className="text-sm text-gray-300 truncate">
+          {currentTrack.artists.join(", ")}
+        </p>
+
+        <p className="text-sm text-gray-400 truncate">
+          {currentTrack.album.name}
+        </p>
+
+        {/* Progress */}
+
+        <div className="mt-3 w-full">
+          <div className="flex justify-between text-xs text-gray-400 mb-1">
+            <span>{formatTime(progress)}</span>
+
+            <span>{formatTime(currentTrack.duration)}</span>
+          </div>
+
+          <div className="h-2 bg-gray-600 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-green-500 transition-all duration-200"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Actions */}
-      <div className="flex-shrink-0">
-        {currentTrack.isLyricsAvailable ? (
+
+      <div className="flex gap-2">
+        {currentTrack.isLyricsAvailable && (
           <Link
-            href={`/lyrics/${encodeURIComponent(currentTrack.gid)}`}
-            className="inline-block bg-purple-700 hover:bg-purple-800 text-white text-xs md:text-sm px-3 py-2 rounded-md transition"
+            href={`/lyrics/${currentTrack.gid}`}
+            className="bg-purple-700 hover:bg-purple-800 px-3 py-2 rounded-md text-sm"
           >
             Show Lyrics
           </Link>
-        ) : (
-          !pathname.startsWith("/contribute") && (
-            <Link
-              href={`/contribute/${encodeURIComponent(currentTrack.gid)}`}
-              className="inline-block bg-gray-700 hover:bg-gray-800 text-white text-xs md:text-sm px-3 py-2 rounded-md transition"
-            >
-              Contribute
-            </Link>
-          )
+        )}
+
+        {!pathname.startsWith("/contribute") && (
+          <Link
+            href={`/contribute/${currentTrack.gid}`}
+            className="bg-gray-700 hover:bg-gray-800 px-3 py-2 rounded-md text-sm"
+          >
+            Contribute
+          </Link>
         )}
       </div>
     </div>

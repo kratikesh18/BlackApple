@@ -1,13 +1,37 @@
-import { spotify } from "@/lib/spotify";
+import { getSpotifyClient } from "@/lib/spotify";
 import { ApiResponse } from "@/lib/apiResponse";
 import { DBConnect } from "@/lib/dbconnect";
 import LyricsModel from "@/models/lyrics.model";
-import type { PlaybackState } from "@spotify/web-api-ts-sdk";
+import type { PlaybackState , } from "@spotify/web-api-ts-sdk";
 
 interface CurrentlyPlayingSongType extends PlaybackState {}
+
+const formatData = (currentlyPlayingSong: CurrentlyPlayingSongType) => {
+  return {
+    gid: currentlyPlayingSong.item.id,
+    name: currentlyPlayingSong.item.name,
+    isPlaying: currentlyPlayingSong.is_playing,
+
+    progressMs: currentlyPlayingSong.progress_ms,
+    duration: currentlyPlayingSong.item.duration_ms,
+    remainingTime:
+      currentlyPlayingSong.item.duration_ms - currentlyPlayingSong.progress_ms,
+    //@ts-ignore
+    artists: currentlyPlayingSong.item.artists.map(
+      (artist: any) => artist.name,
+    ),
+    album: {
+      //@ts-ignore
+      name: currentlyPlayingSong.item.album.name,
+      //@ts-ignore
+      image: currentlyPlayingSong.item.album.images[0]?.url,
+    },
+  }
+};
+
 export async function GET() {
   try {
-    const s = await spotify();
+    const s = await getSpotifyClient();
 
     const currentlyPlayingSong: CurrentlyPlayingSongType =
       await s.player.getCurrentlyPlayingTrack();
@@ -16,38 +40,23 @@ export async function GET() {
       return ApiResponse.success(null, "No song is currently playing", 200);
     }
 
-    const formatted = {
-      gid: currentlyPlayingSong.item.id,
-      name: currentlyPlayingSong.item.name,
-      artists: currentlyPlayingSong.item.artists.map(
-        (artist: any) => artist.name
-      ),
-      album: {
-        name: currentlyPlayingSong.item.album.name,
-        image: currentlyPlayingSong.item.album.images[0]?.url,
-      },
-      progressMs: currentlyPlayingSong.progress_ms,
-      isPlaying: currentlyPlayingSong.is_playing,
-      duration: currentlyPlayingSong.item.duration_ms,
-      remainingTime:
-        currentlyPlayingSong.item.duration_ms -
-        currentlyPlayingSong.progress_ms,
-    };
+    const formatted = formatData(currentlyPlayingSong);
 
     //checking if the lyrics is available or not in the db
 
     await DBConnect();
 
-    const lyrics = (await LyricsModel.exists({
+    const lyrics = await LyricsModel.exists({
       global_id: currentlyPlayingSong.item.id,
-    }))
-      ? true
-      : false;
+    });
+
+    //spread operator
+    const responseToSend = { ...formatted, isLyricsAvailable: lyrics };
 
     return ApiResponse.success(
-      { ...formatted, isLyricsAvailable: lyrics },
+      responseToSend,
       "Currently playing song fetched successfully",
-      200
+      200,
     );
   } catch (error) {
     console.error("Failed to fetch currently playing track:", error);
