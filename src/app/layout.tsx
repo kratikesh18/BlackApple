@@ -1,11 +1,10 @@
-import type { Metadata } from "next";
 import "./globals.css";
 
 import AuthProvider from "@/context/AuthProvider";
 import SessionLayout from "@/context/SessionLayout";
 import { MainLayout } from "@/components/layouts/MainLayout";
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "blackApple : A Lyrics Library",
   description: "A free lyrics library where you can find lyrics of all songs.",
   authors: [{ name: "Kartikesh Pachkawade" }],

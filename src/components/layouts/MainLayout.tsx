@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect } from "react";
 import Navbar from "../app-components/Navbar";
 import { Toaster } from "sonner";
-import { usePathname } from "next/navigation";
+
 import SpotifyCurrentState, {
   TrackType,
 } from "../app-components/profile-page-components/SpotifyCurrentState";
@@ -13,6 +13,7 @@ import { setCurrentTrack } from "@/store/currentTrackSlice";
 import { RootState } from "@/store/store";
 import { AxiosError } from "axios";
 import { useMySession } from "@/context/MySessionContext";
+import {usePathname} from 'next/navigation'
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
