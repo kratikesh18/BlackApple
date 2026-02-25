@@ -18,6 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <meta
+          name="google-site-verification"
+          content="AkTIyvCALM3bH63vBY_2FAR0NQceT0AwyROmmpFtAoY"
+        />
+      </head>
       <body
         className=" min-h-screen max-h-screen h-screen
          bg-gradient-to-br from-gray-900 via-blue-950 to-black
