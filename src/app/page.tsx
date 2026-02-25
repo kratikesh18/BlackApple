@@ -92,6 +92,7 @@ export default function Home() {
         <GrooveTab />
         // <div>groove tab</div>
       )}
+      
       {/* {activeTab === "Explore" && <ExploreTab />} */}
       {activeTab === "Explore" && (
         <div className="flex justify-center items-center h-full w-full">

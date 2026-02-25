@@ -76,7 +76,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="flex gap-3 flex-col">
+    <div className="flex w-full gap-3 flex-col">
       {/* Header Section */}
       <UserHeader name={session.user.name!} image={session.user.image!} />
 

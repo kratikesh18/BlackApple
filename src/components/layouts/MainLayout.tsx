@@ -75,7 +75,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
       </header>
 
       <main
-        className="flex-1 border-1 overflow-y-scroll
+        className="flex flex-1 border-1 overflow-y-scroll
 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent"
       >
         {children}
@@ -85,7 +85,7 @@ scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent"
         {!(pathname === "/profile" || pathname.startsWith("/lyrics")) && (
           <SpotifyCurrentState />
         )}
-        
+
       </footer>
       <HotKeyLayout />
       <Toaster position="top-right" theme="dark" closeButton duration={500} />

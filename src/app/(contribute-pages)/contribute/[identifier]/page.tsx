@@ -136,7 +136,7 @@ const ContributePage = () => {
                       <Textarea
                         id="lyrics"
                         placeholder="Start typing lyrics here..."
-                        className="bg-white/5 flex-1 min-h-0 !text-3xl  border-white/10 text-white placeholder:text-zinc-500 overflow-y-scroll max-h-2/3"
+                        className="bg-white/5 flex-1 min-h-0 !text-3xl  border-white/10 text-white placeholder:text-zinc-500 overflow-y-scroll "
                         {...field}
                       />
                     </FormControl>
