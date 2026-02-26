@@ -5,7 +5,7 @@ const api = axios.create({
   baseURL:
     baseURL || process.env.NODE_ENV == "production"
       ? baseURL
-      : "https://blackappple.vercel.app/api",
+      : "http://127.0.0.1:3000/api",
   withCredentials: true,
 });
 

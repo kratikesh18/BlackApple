@@ -13,7 +13,7 @@ export async function GET() {
       5
     );
 
-    console.log("printing the top artists: ", topArtists);
+    // console.log("printing the top artists: ", topArtists);
     if (!topArtists) {
       return ApiResponse.error("Failed to fetch top artists", 500);
     }
@@ -23,7 +23,7 @@ export async function GET() {
       name: artist.name,
       image: artist.images?.[0]?.url,
     }));
-    console.log("printing the formatted data: ", formatted);
+    // console.log("printing the formatted data: ", formatted);
 
     return ApiResponse.success(
       formatted,

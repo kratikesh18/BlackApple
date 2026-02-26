@@ -8,7 +8,7 @@ export const config = {
 export async function middleware(request: NextRequest) {
   const token = await getToken({
     req: request,
-    // secret: process.env.NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET,      // this is neccessary in production else middleware won't work as expected envrionment variables behave differently in production
   });
 
   // console.log(token);

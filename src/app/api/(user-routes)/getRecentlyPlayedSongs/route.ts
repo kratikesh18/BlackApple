@@ -14,7 +14,7 @@ export async function GET() {
     const recentlyPlayedSongs = await s.player.getRecentlyPlayedTracks(5);
 
     if (!recentlyPlayedSongs) {
-      console.log(recentlyPlayedSongs);
+      // console.log(recentlyPlayedSongs);
       throw new Error(
         "Error fetching the recentlyplaying tracks",
         recentlyPlayedSongs
