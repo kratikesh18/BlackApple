@@ -1,36 +1,217 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎧 blackApple — A Community-Powered Lyrics Library
 
-## Getting Started
+**blackApple** is a modern, full-stack lyrics platform that integrates directly with Spotify to deliver a seamless, real-time lyrics experience. It allows listeners to **view, contribute, and manage song lyrics** while staying connected to what they’re currently playing.
 
-First, run the development server:
+🌐 **Live App:** https://blackappple.vercel.app
+👨‍💻 **Developer Portfolio:** https://kartikeshpachkawade.vercel.app
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+# ✨ Vision
+
+Music is universal, but lyrics availability is fragmented, inconsistent, and often locked behind closed ecosystems.
+
+**blackApple solves this by creating an open, community-driven lyrics infrastructure** where:
+
+- Users can contribute lyrics
+- Lyrics sync with real Spotify listening
+- The community builds the library together
+
+This is not just a project — it's the foundation of a **scalable lyrics ecosystem.**
+
+---
+
+# 🚀 Core Use Cases
+
+## 🎵 Real-Time Spotify Lyrics Integration
+
+blackApple connects to your Spotify account and:
+
+- Detects currently playing song
+- Shows lyrics availability instantly
+- Allows quick access to lyrics
+
+This creates a **frictionless lyrics experience.**
+
+---
+
+## ✍️ Community Lyrics Contribution
+
+If lyrics are missing:
+
+- Users can contribute lyrics
+- Expand the global lyrics database
+- Help other listeners
+
+This transforms passive listeners into **active contributors.**
+
+---
+
+## 👤 Personal Dashboard
+
+Authenticated users can:
+
+- Access their profile
+- Contribute lyrics
+- Manage song interactions
+
+Encouraging **ownership and participation.**
+
+---
+
+## 🌍 Open Lyrics Infrastructure
+
+Unlike closed platforms, blackApple promotes:
+
+- Open access
+- Community-driven growth
+- Scalable architecture
+
+Positioning itself as a **future lyrics backbone.**
+
+---
+
+# 🧠 Technical Highlights
+
+## ⚡ Modern Full-Stack Architecture
+
+### Frontend
+
+- Next.js 15 (App Router)
+- TypeScript
+- Tailwind CSS
+- React Hook Form
+- Zod
+
+### Backend
+
+- Next.js API Routes
+- NextAuth.js Authentication
+- Spotify Web API Integration
+
+### Deployment
+
+- Vercel Edge Network
+
+---
+
+## 🔐 Secure Authentication
+
+- Spotify OAuth
+- JWT sessions
+- Protected routes via middleware
+- Production-grade auth flow
+
+---
+
+## 🎯 Real-Time Spotify Sync
+
+Features include:
+
+- Current song detection
+- Live progress tracking
+- Lyrics availability detection
+
+---
+
+## 🎨 Modern UI
+
+- Spotify-inspired design
+- Responsive layout
+- Clean typography
+- Smooth UX
+
+---
+
+# 🏗️ Architecture
+
+```
+User
+ ↓
+Next.js Frontend
+ ↓
+NextAuth Authentication
+ ↓
+Spotify API
+ ↓
+Lyrics API
+ ↓
+Database
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# 📂 Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/
+components/
+context/
+hooks/
+lib/
+schemas/
+store/
+middleware.ts
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+# 🌟 Why This Project Matters
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+blackApple demonstrates:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Real-world API integration
+- Authentication systems
+- Scalable architecture
+- Production deployment
+- Community-driven design thinking
 
-## Deploy on Vercel
+This is a **production-grade portfolio project**, not just a demo.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# 🧑‍💻 Author
+
+**Kartikesh Pachkawade**
+
+Full Stack Developer passionate about building meaningful products.
+
+Portfolio:
+
+https://kartikeshpachkawade.vercel.app
+
+---
+
+# 🔮 Future Roadmap
+
+- Synced lyrics
+- Public lyrics API
+- Contribution system
+- Playlist lyrics
+- Mobile version
+
+---
+
+# ⭐ Support
+
+If you like this project:
+
+- Star the repository
+- Share it
+- Connect with me
+
+Portfolio:
+
+https://kartikeshpachkawade.vercel.app
+
+---
+
+# 📜 License
+
+This project is open source and available under the MIT License.
+
+---
+
+# 🎵 blackApple
+
+**Building the open lyrics future.**
