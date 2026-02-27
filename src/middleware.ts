@@ -1,34 +1,62 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-export const config = {
-  matcher: ["/profile", "/login"],
-};
-
 export async function middleware(request: NextRequest) {
+  console.log("\n========== 🔐 MIDDLEWARE START ==========");
+
+  console.log("➡️ URL:", request.url);
+
+  console.log("➡️ Pathname:", request.nextUrl.pathname);
+
+  console.log("➡️ NEXTAUTH_SECRET exists:", !!process.env.NEXTAUTH_SECRET);
+
+  console.log(
+    "➡️ NEXTAUTH_SECRET length:",
+    process.env.NEXTAUTH_SECRET?.length || 0,
+  );
+
+  // Try getting token
   const token = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET,      // this is neccessary in production else middleware won't work as expected envrionment variables behave differently in production
+    secret: process.env.NEXTAUTH_SECRET,
   });
 
-  // console.log(token);
+  console.log("➡️ Token exists:", !!token);
+
+  console.log("➡️ Full Token:", token);
 
   const { pathname } = request.nextUrl;
 
-  // If user is NOT authenticated and trying to access a protected route
+  // 🚫 NOT AUTHENTICATED
   if (!token && pathname.startsWith("/profile")) {
-    console.log(
-      "❌ Unauthenticated access to /profile - redirecting to /login"
-    );
-    return NextResponse.redirect(new URL("/login", request.nextUrl.origin));
+    console.log("❌ User NOT authenticated");
+
+    console.log("🔁 Redirecting to /login");
+
+    console.log("========== 🔐 MIDDLEWARE END ==========\n");
+
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // If user IS authenticated and trying to access the login page
+  // ✅ AUTHENTICATED but accessing login
   if (token && pathname.startsWith("/login")) {
-    console.log("✅ Authenticated user - redirecting from /login to /profile");
-    return NextResponse.redirect(new URL("/profile", request.nextUrl.origin));
+    console.log("✅ User authenticated");
+
+    console.log("🔁 Redirecting to /profile");
+
+    console.log("========== 🔐 MIDDLEWARE END ==========\n");
+
+    return NextResponse.redirect(new URL("/profile", request.url));
   }
 
-  // Allow access to all other routes
+  // ✅ Allow
+  console.log("✅ Access allowed");
+
+  console.log("========== 🔐 MIDDLEWARE END ==========\n");
+
   return NextResponse.next();
 }
+
+export const config = {
+  matcher: ["/profile/:path*", "/login"],
+};
