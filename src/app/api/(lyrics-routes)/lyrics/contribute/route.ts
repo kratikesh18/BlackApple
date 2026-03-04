@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   */
   try {
     await DBConnect();
-    
+
     const body = await req.json();
     const { rawString: rawText, global_id } = body;
 
@@ -37,9 +37,9 @@ export async function POST(req: NextRequest) {
     const existingLyrics = await LyricsModel.findOne({ global_id });
 
     if (existingLyrics) {
-      existingLyrics.lyricsText = [
-        ...existingLyrics.lyricsText,
 
+
+      existingLyrics.lyricsText = [
         ...linesToinsert,
       ];
 

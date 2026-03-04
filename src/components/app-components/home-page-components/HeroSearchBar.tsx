@@ -10,7 +10,7 @@ import {
 } from "@/types/RecentlyPlayedResponse";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
-import { closeSearch } from "@/store/searchBarSlice";
+import { closeSearch } from "@/store/slices/searchBarSlice";
 
 export const HeroSearchBar = () => {
   const dispatch = useDispatch();

@@ -74,12 +74,13 @@ LyricsSchema.pre("save", function (next) {
   const lyrics = this as Lyrics;
   if (lyrics.lyricsText && lyrics.lyricsText.length > 0) {
     let startTime = 0;
-    let endTime = 5;
+    let endTime = 3;
+
     lyrics.lyricsText.forEach((line) => {
       line.startTime = startTime;
       line.endTime = endTime;
       startTime = endTime + 1;
-      endTime = startTime + 4;
+      endTime = startTime + 2;
     });
   }
   next();

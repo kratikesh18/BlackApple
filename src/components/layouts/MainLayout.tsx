@@ -9,13 +9,15 @@ import SpotifyCurrentState, {
 import HotKeyLayout from "./HotKeyLayout";
 import api from "@/lib/api";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentTrack } from "@/store/currentTrackSlice";
+import { setCurrentTrack } from "@/store/slices/currentTrackSlice";
 import { RootState } from "@/store/store";
 import { AxiosError } from "axios";
 import { useMySession } from "@/context/MySessionContext";
 import {usePathname} from 'next/navigation'
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
+
+  
   const pathname = usePathname();
   const dispatch = useDispatch();
   const { session } = useMySession();
@@ -41,11 +43,14 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     }
   }, [dispatch, session]);
 
+  // this is for animations of minute and seconds
   useEffect(() => {
     getCurrentlyPlayingSong();
+
     //already got the lyrics informatin with the updated state of store
     let interval = undefined;
     console.log("printing currenttrack ", currentTrack);
+
 
     if (!currentTrack) {
       console.log("No song playing .. so not remaining time");
@@ -66,6 +71,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
       }, currentTrack.remainingTime);
     }
 
+
     return () => clearInterval(interval);
   }, [getCurrentlyPlayingSong]);
 
@@ -76,13 +82,12 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
       </header>
 
       <main
-        className="flex flex-1 border-1 overflow-y-scroll
-scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent"
+        className="flex flex-1 border-1 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent"
       >
         {children}
       </main>
 
-      <footer className="w-full border ">
+      <footer className="w-full border">
         {!(pathname === "/profile" || pathname.startsWith("/lyrics")) && (
           <SpotifyCurrentState />
         )}

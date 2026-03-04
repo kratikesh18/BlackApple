@@ -5,7 +5,7 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import api from "@/lib/api";
 import { newLyricsSchema } from "@/schemas/newLyricsSchema";
-import { changeAvailability } from "@/store/currentTrackSlice";
+import { changeAvailability } from "@/store/slices/currentTrackSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -14,18 +14,23 @@ import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import z from "zod";
 
+function lyricsToString(data: ISongData | null) {
+  if (!data) return;
+
+  let stringedLyrics = data.lyrics.map((each) => each.line).join("\n");
+  console.log(stringedLyrics);
+
+  return stringedLyrics;
+}
+
 const ContributePage = () => {
   const params = useParams();
   const [songData, setSongData] = useState<ISongData | null>(null);
 
-  const form = useForm<z.infer<typeof newLyricsSchema>>({
-    resolver: zodResolver(newLyricsSchema),
-    defaultValues: { rawText: "" },
-  });
-
   const dispatch = useDispatch();
 
   useEffect(() => {
+    //fetching the songdata
     const fetchSongDetails = async () => {
       try {
         const { data } = await api.get(
@@ -42,8 +47,6 @@ const ContributePage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-
-
   const saveLyrics = async (data: z.infer<typeof newLyricsSchema>) => {
     try {
       setLoading(true);
@@ -53,8 +56,7 @@ const ContributePage = () => {
       //   return;
       // }
 
-
-      console.log(data.rawText)
+      console.log(data.rawText);
       const response = await api.post("/lyrics/contribute", {
         rawString: data.rawText,
         global_id: params.identifier,
@@ -77,6 +79,18 @@ const ContributePage = () => {
       setLoading(false);
     }
   };
+
+  const form = useForm<z.infer<typeof newLyricsSchema>>({
+    resolver: zodResolver(newLyricsSchema),
+    defaultValues: { rawText: " " },
+  });
+
+  useEffect(() => {
+    if (!songData) return;
+
+    const text = songData.lyrics.map((l) => l.line).join("\n");
+    form.reset({ rawText: text });
+  }, [songData, form]);
 
   if (!songData) {
     return <div>Hold on, we are working on it.</div>;

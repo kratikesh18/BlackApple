@@ -1,5 +1,5 @@
 "use client";
-import { toggleSearch } from "@/store/searchBarSlice";
+import { toggleSearch } from "@/store/slices/searchBarSlice";
 import  { useEffect } from "react";
 import { useDispatch } from "react-redux";
 

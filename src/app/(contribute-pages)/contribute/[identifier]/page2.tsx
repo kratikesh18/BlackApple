@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useLyricsService } from "@/hooks/useLyricsService";
 import api from "@/lib/api";
 import { newLyricsSchema } from "@/schemas/newLyricsSchema";
-import { changeAvailability } from "@/store/currentTrackSlice";
+import { changeAvailability } from "@/store/slices/currentTrackSlice";
 import { RootState } from "@/store/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
@@ -96,7 +96,7 @@ const ContributePage = () => {
     defaultValues: { rawText: "" },
   });
 
-  
+
   return (
     <div>
       <div>

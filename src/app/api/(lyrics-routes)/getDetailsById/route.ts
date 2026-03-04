@@ -2,17 +2,28 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getSpotifyClient } from "@/lib/spotify";
 import { PlaybackState, Track } from "@spotify/web-api-ts-sdk";
+import { DBConnect } from "@/lib/dbconnect";
+import LyricsModel from "@/models/lyrics.model";
 
-export interface ISongData{
-  gid : string,
-  name : string,
-  artists : [string],
-  album:{
-    name:string,
-    image:string
-  }
+export interface ISongData {
+  gid: string;
+  name: string;
+  artists: [string];
+  album: {
+    name: string;
+    image: string;
+  };
+  lyrics: [
+    {
+      line:string;
+      startTime: number;
+      endTime: number;
+      _id:string
+    },
+  ] | [];
 }
-const formatData = (rawdata: Track) => {
+const formatData = (rawdata: Track, lyrics: any) => {
+
   return {
     gid: rawdata.id,
     name: rawdata.name,
@@ -23,6 +34,7 @@ const formatData = (rawdata: Track) => {
       name: rawdata.album.name,
       image: rawdata.album.images[0]?.url,
     },
+    lyrics: lyrics || [],
   };
 };
 
@@ -44,8 +56,17 @@ export async function GET(req: NextRequest) {
 
     const songDetailsRaw: Track = await client.tracks.get(global_id);
 
+    // code for getting the lyrics from database
+    await DBConnect();
+    const lyricsExist = await LyricsModel.findOne({ global_id }).select(
+      "lyricsText",
+    );
+
+
+    // console.log(lyricsText)
+
     // const songDetailsFiltered = formatSongDetails(songDetailsRaw);
-    const songDetailsFiltered = formatData(songDetailsRaw);
+    const songDetailsFiltered = formatData(songDetailsRaw, lyricsExist);
 
     if (!songDetailsFiltered) {
       return Response.json(

@@ -1,12 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import { SearchBarSlice } from "./searchBarSlice";
-import { currentTrackSlice } from "./currentTrackSlice";
+import { SearchBarSlice } from "./slices/searchBarSlice";
+import { currentTrackSlice } from "./slices/currentTrackSlice";
+import { contributeDataSlice } from "./slices/contributeDataSlice";
 
 const store = configureStore({
   reducer: {
     currentTrack: currentTrackSlice.reducer,
     searchBar: SearchBarSlice.reducer,
+    contributeData : contributeDataSlice.reducer
   },
 });
 

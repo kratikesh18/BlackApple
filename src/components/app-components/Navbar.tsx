@@ -12,7 +12,7 @@ import { useMySession } from "@/context/MySessionContext";
 import HomeIcon from "../icons/HomeIcon";
 import LogoutIcon from "../icons/LogoutIcon";
 
-import { openSearch } from "@/store/searchBarSlice";
+import { openSearch } from "@/store/slices/searchBarSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 

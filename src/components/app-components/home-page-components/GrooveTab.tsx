@@ -31,7 +31,11 @@ function GrooveTab() {
   //fetching the pathnames for the easy routing
   const router = useRouter();
   const pathname = usePathname();
+
+  
   const {getLyricsForCurrentTrack} = useLyricsService()
+
+
   //accessing the state from the store
   const { currentTrack } = useSelector(
     (state: RootState) => state.currentTrack
@@ -58,6 +62,7 @@ function GrooveTab() {
   useEffect(() => {
     const fetchLyrics = async () => {
       try {
+
         if (!currentTrack?.gid) return;
 
         // reset lyrics before fetching new ones
@@ -80,7 +85,6 @@ function GrooveTab() {
           // setError("Lyrics Not Found ");
           throw new Error("Lyrics not available");
         }
-
         setGrooveData(data.lyricsText);
         // setError(null);
       } catch (err) {
