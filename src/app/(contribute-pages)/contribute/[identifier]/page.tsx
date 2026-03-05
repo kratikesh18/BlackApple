@@ -14,17 +14,19 @@ import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import z from "zod";
 
-function lyricsToString(data: ISongData | null) {
-  if (!data) return;
+// function lyricsToString(data: ISongData | null) {
+//   if (!data) return;
 
-  let stringedLyrics = data.lyrics.map((each) => each.line).join("\n");
-  console.log(stringedLyrics);
+//   let stringedLyrics = data.lyrics.map((each) => each.line).join("\n");
+//   console.log(stringedLyrics);
 
-  return stringedLyrics;
-}
+//   return stringedLyrics;
+// }
 
 const ContributePage = () => {
+  //take the parameter from url
   const params = useParams();
+
   const [songData, setSongData] = useState<ISongData | null>(null);
 
   const dispatch = useDispatch();
@@ -86,11 +88,14 @@ const ContributePage = () => {
   });
 
   useEffect(() => {
-    if (!songData) return;
+    if (!songData || !songData.lyrics.lyricsText) return;
+    // console.log(typeof songData.lyrics.lyricsText);
+    // console.log(songData.lyrics.lyricsText.length);
 
-    const text = songData.lyrics.map((l) => l.line).join("\n");
-    form.reset({ rawText: text });
-  }, [songData, form]);
+    const text = songData.lyrics.lyricsText.map((l) => l.line).join("\n");
+
+    form.reset({ rawText:text||  "" });
+  }, [songData]);
 
   if (!songData) {
     return <div>Hold on, we are working on it.</div>;

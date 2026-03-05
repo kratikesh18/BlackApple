@@ -13,17 +13,13 @@ export interface ISongData {
     name: string;
     image: string;
   };
-  lyrics: [
-    {
-      line:string;
-      startTime: number;
-      endTime: number;
-      _id:string
-    },
-  ] | [];
+  lyrics: {
+    lyricsText:
+      | [{ line: string; startTime: number; endTime: number; _id: string }]
+      | [];
+  };
 }
 const formatData = (rawdata: Track, lyrics: any) => {
-
   return {
     gid: rawdata.id,
     name: rawdata.name,
@@ -61,7 +57,6 @@ export async function GET(req: NextRequest) {
     const lyricsExist = await LyricsModel.findOne({ global_id }).select(
       "lyricsText",
     );
-
 
     // console.log(lyricsText)
 
