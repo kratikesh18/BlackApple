@@ -17,7 +17,7 @@ import {usePathname} from 'next/navigation'
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
 
-  
+
   const pathname = usePathname();
   const dispatch = useDispatch();
   const { session } = useMySession();
@@ -81,20 +81,20 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
         <Navbar />
       </header>
 
-      <main
-        className="flex flex-1 border-1 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent"
-      >
+      <main className="flex flex-1 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
         {children}
       </main>
 
-      <footer className="w-full border">
+      <footer className="w-full ">
         {!(pathname === "/profile" || pathname.startsWith("/lyrics")) && (
           <SpotifyCurrentState />
         )}
-
       </footer>
-      <HotKeyLayout />
-      <Toaster position="top-right" theme="dark" closeButton duration={500} />
+      <div className="absolute">
+
+        <HotKeyLayout />
+        <Toaster position="top-right" theme="dark" closeButton duration={500} />
+      </div>
     </>
   );
 };

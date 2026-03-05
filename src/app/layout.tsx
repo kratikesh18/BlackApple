@@ -28,7 +28,7 @@ export default function RootLayout({
          bg-gradient-to-br from-gray-900 via-blue-950 to-black
         text-white
         flex flex-col space-y-2
-        container
+        md:container
         "
         suppressHydrationWarning
       >

@@ -125,72 +125,69 @@ export default function SpotifyCurrentState() {
   };
 
   return (
-    <div className="bg-accent-foreground border border-white/10 rounded-lg p-4 flex flex-col md:flex-row items-center gap-4 ">
-      {/* Artwork */}
+    <div className="flex flex-col p-2 sm:p-3 rounded-lg bg-gray-200/10 backdrop-blur-2xl  bg-opacity-10 border border-white/20">
+      {/* Top Section */}
+      <div className="flex w-full items-center">
+        {/* Artwork */}
+        <div className="w-1/5 sm:w-16 md:w-20 flex-shrink-0">
+          <img
+            src={currentTrack.album.image || PLACEHOLDER}
+            alt={currentTrack.album.name}
+            className="w-full h-auto rounded-md object-cover"
+          />
+        </div>
 
-      <div className="flex-shrink-0">
-        <img
-          src={currentTrack.album.image || PLACEHOLDER}
-          alt={currentTrack.album.name}
-          className="h-20 w-20 md:h-24 md:w-24 object-cover rounded-md"
-        />
-      </div>
+        {/* Info */}
+        <div className="flex-1 ml-2 min-w-0">
+          <h4 className="text-sm sm:text-base md:text-lg font-semibold text-white truncate">
+            {currentTrack.name}
+          </h4>
 
-      {/* Info */}
+          <p className="text-xs sm:text-sm text-gray-300 truncate">
+            {currentTrack.artists.join(", ")}
+          </p>
 
-      <div className="flex-1 min-w-0 w-full">
-        <h4 className="text-lg font-semibold text-white truncate">
-          {currentTrack.name}
-        </h4>
+          <p className="text-xs sm:text-sm text-gray-400 truncate">
+            {currentTrack.album.name}
+          </p>
+        </div>
 
-        <p className="text-sm text-gray-300 truncate">
-          {currentTrack.artists.join(", ")}
-        </p>
+        {/* Actions */}
+        <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 ml-2">
+          {currentTrack.isLyricsAvailable && (
+            <Link
+              href={`/lyrics/${currentTrack.gid}`}
+              className="bg-purple-700 hover:bg-purple-800 px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm"
+            >
+              s
+            </Link>
+          )}
 
-        <p className="text-sm text-gray-400 truncate">
-          {currentTrack.album.name}
-        </p>
-
-        {/* Progress */}
-
-        <div className="mt-3 w-full">
-          <div className="flex justify-between text-xs text-gray-400 mb-1">
-            <span>{formatTime(progress)}</span>
-
-            <span>{formatTime(currentTrack.duration)}</span>
-          </div>
-
-          <div className="h-2 bg-gray-600 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-green-500 transition-all duration-200"
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
+          {!pathname.startsWith("/contribute") && (
+            <Link
+              href={`/contribute/${currentTrack.gid}`}
+              className="bg-gray-700 hover:bg-gray-800 px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm"
+            >
+              c
+            </Link>
+          )}
         </div>
       </div>
 
-      {/* Actions */}
+      {/* Progress */}
+      <div className="mt-2 sm:mt-3 w-full">
+        <div className="flex justify-between text-[10px] sm:text-xs text-gray-400 mb-1">
+          <span>{formatTime(progress)}</span>
+          <span>{formatTime(currentTrack.duration)}</span>
+        </div>
 
-      <div className="flex gap-2">
-        {currentTrack.isLyricsAvailable && (
-          <Link
-            href={`/lyrics/${currentTrack.gid}`}
-            className="bg-purple-700 hover:bg-purple-800 px-3 py-2 rounded-md text-sm"
-          >
-            Show Lyrics
-          </Link>
-        )}
-
-        {!pathname.startsWith("/contribute") && (
-          <Link
-            href={`/contribute/${currentTrack.gid}`}
-            className="bg-gray-700 hover:bg-gray-800 px-3 py-2 rounded-md text-sm"
-          >
-            Contribute
-          </Link>
-        )}
+        <div className="h-1.5 sm:h-2 bg-gray-600 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-green-500 transition-all duration-200"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
       </div>
     </div>
   );
 }
-
