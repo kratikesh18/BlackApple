@@ -85,7 +85,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
         {children}
       </main>
 
-      <footer className="w-full ">
+      <footer className="w-full">
         {!(pathname === "/profile" || pathname.startsWith("/lyrics")) && (
           <SpotifyCurrentState />
         )}

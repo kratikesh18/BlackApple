@@ -7,6 +7,7 @@ import api from "@/lib/api";
 import { newLyricsSchema } from "@/schemas/newLyricsSchema";
 import { changeAvailability } from "@/store/slices/currentTrackSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -84,7 +85,6 @@ const ContributePage = () => {
 
   const form = useForm<z.infer<typeof newLyricsSchema>>({
     resolver: zodResolver(newLyricsSchema),
-    defaultValues: { rawText: " " },
   });
 
   useEffect(() => {
@@ -94,7 +94,7 @@ const ContributePage = () => {
 
     const text = songData.lyrics.lyricsText.map((l) => l.line).join("\n");
 
-    form.reset({ rawText:text||  "" });
+    form.reset({ rawText: text });
   }, [songData]);
 
   if (!songData) {
@@ -102,49 +102,61 @@ const ContributePage = () => {
   }
 
   return (
-    <div className="container h-full w-full bg-gradient-to-b from-black to-zinc-900 p-6">
-      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl h-full flex flex-col">
+    <div className="md:container mx-auto h-full w-full bg-gradient-to-b  p-3 md:p-6">
+      <div className="flex flex-col gap-4 h-full ">
+        {/* Heading */}
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-white">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
             You are Contributing Lyrics For
           </h1>
         </div>
 
-        <div className=" flex justify-between">
-          <div className="bg-white/5 border flex-1 border-white/10 rounded-xl p-4 space-y-1">
-            <h2 className="text-2xl font-semibold text-green-400 mt-2">
+        {/* Song Info */}
+        <div className="flex items-center justify-between gap-3 ">
+          {/* Text Info */}
+          <div className="bg-white/5 border border-white/10 rounded-xl p-3 sm:p-4 flex-1 min-w-0 h-full flex  flex-col justify-center">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-green-400">
               {songData.name}
             </h2>
-            <div className="flex flex-wrap gap-1">
+
+            <div className="flex flex-wrap gap-1 text-sm sm:text-base">
               {songData.artists.map((artist, idx) => (
                 <span className="text-white" key={idx}>
-                  {artist},
+                  {artist}
+                  {idx !== songData.artists.length - 1 && ","}
                 </span>
               ))}
             </div>
-            <p className="text-zinc-400 ">Album: {songData.album.name}</p>
+
+            <p className="text-zinc-400 text-sm sm:text-base">
+              {songData.album.name}
+            </p>
           </div>
-          <div>
-            <img
+
+          {/* Artwork */}
+          <div className="flex-shrink-0">
+            <Image
               src={songData.album.image}
               alt={songData.name}
-              height={140}
-              width={140}
-              className="rounded-xl"
+              height={150}
+              width={150}
+              className="rounded-xl w-16 h-16 sm:w-24 sm:h-24 md:w-[140px] md:h-[140px] object-cover"
             />
           </div>
         </div>
 
-        <div className="space-y-2 mt-2 flex-1 min-h-0 flex flex-col">
-          <div className="flex w-full justify-between items-center">
-            <label className="text-2xl text-white font-medium" htmlFor="lyrics">
+        {/* Lyrics Editor */}
+        <div className="flex flex-col flex-1 min-h-0 gap-2">
+          <div className="flex justify-between items-center">
+            <label className="text-lg sm:text-xl md:text-2xl text-white font-medium">
               Lyrics
             </label>
           </div>
+
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(saveLyrics)}
-              className="flex flex-col gap-4 flex-1"
+              className="flex flex-col gap-3 flex-1"
             >
               <FormField
                 control={form.control}
@@ -155,16 +167,17 @@ const ContributePage = () => {
                       <Textarea
                         id="lyrics"
                         placeholder="Start typing lyrics here..."
-                        className="bg-white/5 flex-1 min-h-0 !text-3xl  border-white/10 text-white placeholder:text-zinc-500 overflow-y-scroll "
+                        className="bg-white/5 flex-1 min-h-0 text-lg sm:text-xl md:text-2xl border-white/10 text-white placeholder:text-zinc-500 overflow-y-auto"
                         {...field}
                       />
                     </FormControl>
                   </FormItem>
                 )}
               />
+
               <Button
                 type="submit"
-                className="bg-green-700 w-fit px-4 "
+                className="bg-green-700 w-fit px-4"
                 disabled={loading}
               >
                 {loading ? "Submitting..." : "Submit and sync"}

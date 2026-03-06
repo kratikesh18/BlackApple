@@ -32,7 +32,7 @@ function GrooveTab() {
   const router = useRouter();
   const pathname = usePathname();
 
-  
+
   const {getLyricsForCurrentTrack} = useLyricsService()
 
 

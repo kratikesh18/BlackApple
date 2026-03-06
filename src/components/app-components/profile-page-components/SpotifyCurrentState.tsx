@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 const PLACEHOLDER =
   "data:image/svg+xml;%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500' viewBox='0 0 24 24'%3E%3Crect fill='%23343a40' width='100%25' height='100%25'/%3E%3Ctext x='50%25' y='52%25' fill='%23fff' font-size='10' font-family='Arial' dominant-baseline='middle' text-anchor='middle'%3ENO%20IMG%3C/text%3E%3C/svg%3E";
@@ -130,9 +131,11 @@ export default function SpotifyCurrentState() {
       <div className="flex w-full items-center">
         {/* Artwork */}
         <div className="w-1/5 sm:w-16 md:w-20 flex-shrink-0">
-          <img
+          <Image
             src={currentTrack.album.image || PLACEHOLDER}
             alt={currentTrack.album.name}
+            width={150}
+            height={150}
             className="w-full h-auto rounded-md object-cover"
           />
         </div>
