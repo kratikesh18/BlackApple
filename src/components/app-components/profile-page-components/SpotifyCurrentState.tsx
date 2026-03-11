@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import EditIcon from "@/components/icons/EditIcon";
+import LyricsIcon from "@/components/icons/LyricsIcon";
 
 const PLACEHOLDER =
   "data:image/svg+xml;%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500' viewBox='0 0 24 24'%3E%3Crect fill='%23343a40' width='100%25' height='100%25'/%3E%3Ctext x='50%25' y='52%25' fill='%23fff' font-size='10' font-family='Arial' dominant-baseline='middle' text-anchor='middle'%3ENO%20IMG%3C/text%3E%3C/svg%3E";
@@ -162,7 +164,7 @@ export default function SpotifyCurrentState() {
               href={`/lyrics/${currentTrack.gid}`}
               className="bg-purple-700 hover:bg-purple-800 px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm"
             >
-              s
+              <LyricsIcon/>
             </Link>
           )}
 
@@ -171,7 +173,7 @@ export default function SpotifyCurrentState() {
               href={`/contribute/${currentTrack.gid}`}
               className="bg-gray-700 hover:bg-gray-800 px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm"
             >
-              c
+              <EditIcon/>
             </Link>
           )}
         </div>

@@ -1,5 +1,7 @@
 "use client";
+
 import React from "react";
+import { cn } from "@/lib/utils";
 
 interface SectionWrapperProps {
   children: React.ReactNode;
@@ -10,18 +12,20 @@ interface SectionWrapperProps {
 function SectionWrapper({ children, title, className }: SectionWrapperProps) {
   return (
     <section
-      className={`bg-gray-200/10 backdrop-blur-2xl h-fit bg-opacity-10 border border-white/20 md:px-5 rounded-lg py-3 md:py-5 w-full ${className}`}
+      className={cn(
+        "w-full rounded-lg border border-white/20 bg-gray-200/10 px-4 md:px-5 py-3 md:py-5",
+        className,
+      )}
     >
       {title && (
-        <h1 className="text-lg md:text-xl text-white font-bold mb-2 md:mb-3">
+        <h1 className="text-lg md:text-xl font-bold text-white mb-3">
           {title}
         </h1>
       )}
-      <div className="my-1 md:my-2">{children}</div>
+
+      <div>{children}</div>
     </section>
-    // <section>
-    //   {children}
-    // </section>
+    // <div>{children}</div>
   );
 }
 

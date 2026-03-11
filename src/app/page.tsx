@@ -1,104 +1,37 @@
 "use client";
+
+import React, { useState } from "react";
 import GrooveTab from "@/components/app-components/home-page-components/GrooveTab";
 import TabNavigation from "@/components/app-components/home-page-components/TabNavigation";
 import SectionWrapper from "@/components/app-components/profile-page-components/SectionWrapper";
-import React, { useState } from "react";
+
+type TabType = "Groove" | "Explore";
+
+const ExplorePage = () => {
+  return (
+    <div className="flex justify-center items-center h-full w-full">
+      <h1 className="text-3xl font-bold text-gray-400">Coming Soon</h1>
+    </div>
+  );
+};
 
 export default function Home() {
-
-  const [activeTab, setActiveTab] = useState<"Groove" | "Explore">("Groove");
-
-  // const { getCurrentlyPlaying, checkLyricsAvailability } = useSpotifyService();
-  // const { getLyricsForCurrentTrack } = useLyricsService();
-
-  // const { currentTrack } = useSelector(
-  //   (state: RootState) => state.currentTrack
-  // );
-
-  // const [grooveData, setGrooveData] =
-
-  // useEffect(() => {
-  //   // document.title = "BlueCocain - Home";
-
-  //   const fetchData = async () => {
-  //     try {
-  //       const currentTrack = await getCurrentlyPlaying();
-
-  //       if (currentTrack) {
-  //         console.log("Fetched current track on home page:", currentTrack);
-  //       }
-  //     } catch (err) {
-  //       toast.error("Failed to fetch current track from Spotify.");
-  //       console.error("Error fetching current track:", err);
-  //     }
-  //   };
-
-  //   fetchData();
-  //   //  auto-refresh every 30 sec
-  //   const interval = setInterval(fetchData, 30000);
-  //   return () => clearInterval(interval);
-  // }, []);
-
-  // useEffect(() => {
-  //   const fetchLyrics = async () => {
-  //     if (currentTrack) {
-  //       // if the lyrics are already in the store, no need to check again
-
-  //       const lyricsAvailable = await checkLyricsAvailability(
-  //         currentTrack.global_id
-  //       );
-
-  //       console.log("Lyrics availability:", lyricsAvailable);
-
-  //       if (lyricsAvailable === null && !lyricsAvailable.success) {
-  //         toast.error(
-  //           lyricsAvailable.error || "Lyrics not available for this track."
-  //         );
-  //       }
-
-  //       if (lyricsAvailable && lyricsAvailable.success) {
-  //         try {
-  //           const lyrics = await getLyricsForCurrentTrack(
-  //             currentTrack.global_id
-  //           );
-
-  //           console.log("Fetched lyrics:", lyrics);
-  //           setGrooveData(lyrics.data.lyricsText);
-  //           toast.success("Lyrics fetched successfully!");
-  //         } catch (err) {
-  //           toast.error("Failed to fetch lyrics.");
-  //           console.error("Error fetching lyrics:", err);
-  //         } finally {
-  //           // setLoadingLyrics(false);
-  //         }
-  //       }
-  //     } else {
-  //       console.log("No track is currently playing.");
-  //     }
-  //   };
-
-  //   fetchLyrics();
-  // }, []);
+  const [activeTab, setActiveTab] = useState<TabType>("Groove");
 
   return (
-    <SectionWrapper className="">
-      {/* Tab Navigation */}
+    // <SectionWrapper className=" ">
+    <div className="theme-background h-full flex flex-col">
+      {/* Navigation Tabs */}
       <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* Content Sections */}
+      {/* Tab Content */}
+      <div className="flex-1 min-h-0 overflow-y-auto scrollbar-none">
+        {activeTab === "Groove" && <GrooveTab />}
 
-      {activeTab === "Groove" && (
-        // <GrooveTab grooveData={grooveData} />
-        <GrooveTab />
-        // <div>groove tab</div>
-      )}
+        {activeTab === "Explore" && <ExplorePage />}
+      </div>
+    </div>
 
-      {/* {activeTab === "Explore" && <ExploreTab />} */}
-      {activeTab === "Explore" && (
-        <div className="flex justify-center items-center h-full w-full">
-          <h1 className="text-3xl font-bold">Comming Soon</h1>
-        </div>
-      )}
-    </SectionWrapper>
+    // </SectionWrapper>
   );
 }

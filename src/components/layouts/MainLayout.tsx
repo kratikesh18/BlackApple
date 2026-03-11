@@ -76,26 +76,29 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   }, [getCurrentlyPlayingSong]);
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen  gap-2">
       <header>
         <Navbar />
       </header>
 
-      <main className="flex flex-1 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
-        {children}
-      </main>
+      <main className="flex-1 min-h-0 zx ">{children}</main>
 
       <footer className="w-full">
         {!(pathname === "/profile" || pathname.startsWith("/lyrics")) && (
           <SpotifyCurrentState />
         )}
-      </footer>
-      <div className="absolute">
 
-        <HotKeyLayout />
-        <Toaster position="top-right" theme="dark" closeButton duration={500} />
-      </div>
-    </>
+        <div className="absolute">
+          <HotKeyLayout />
+          <Toaster
+            position="top-right"
+            theme="dark"
+            closeButton
+            duration={500}
+          />
+        </div>
+      </footer>
+    </div>
   );
 };
 

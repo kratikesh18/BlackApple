@@ -13,6 +13,38 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+.scrollbar-spotify::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-spotify::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-spotify::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 9999px;
+  transition: background 0.2s;
+}
+
+/* hover pe visible */
+.scrollbar-spotify:hover::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.35);
+}
+
+/* Firefox */
+.scrollbar-spotify {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.scrollbar-spotify:hover {
+  scrollbar-color: rgba(255,255,255,0.35) transparent;
+}
+
+.theme-background{
+ @apply rounded-lg border border-white/20 bg-gray-200/10
+}
 
 @theme inline {
   --color-background: var(--background);

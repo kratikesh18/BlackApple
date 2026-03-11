@@ -32,13 +32,11 @@ function GrooveTab() {
   const router = useRouter();
   const pathname = usePathname();
 
-
-  const {getLyricsForCurrentTrack} = useLyricsService()
-
+  const { getLyricsForCurrentTrack } = useLyricsService();
 
   //accessing the state from the store
   const { currentTrack } = useSelector(
-    (state: RootState) => state.currentTrack
+    (state: RootState) => state.currentTrack,
   );
 
   //groove data initially empty array
@@ -58,46 +56,44 @@ function GrooveTab() {
   const lastProgressRef = useRef<number>(0);
   const startTimestampRef = useRef<number>(0);
 
+  const fetchLyrics = async () => {
+    try {
+      if (!currentTrack?.gid) return;
+
+      // reset lyrics before fetching new ones
+      setGrooveData([]);
+      setCurrentTime(0);
+
+      // Redirect only if not already on lyrics page
+      if (pathname.startsWith("/lyrics")) {
+        router.replace(`/lyrics/${currentTrack.gid}`);
+      }
+
+      // const res = await api.get(`/lyrics/getLyrics?gid=${currentTrack.gid}`);
+      const res = await getLyricsForCurrentTrack(currentTrack.gid);
+
+      // console.log("Printing the rsponse from lyrics call ", res);
+      const data = res;
+
+      if (!data || !data.lyricsText) {
+        // toast.error("Lyrics not found.");
+        // setError("Lyrics Not Found ");
+        throw new Error("Lyrics not available");
+      }
+      setGrooveData(data.lyricsText);
+      // setError(null);
+    } catch (err) {
+      if (err instanceof Error) {
+        // toast.error(err.message || "Failed to fetch lyrics.");
+        setGrooveData([]);
+        console.warn(err.message);
+      } else {
+        console.warn(err);
+      }
+    }
+  };
   //  Fetch lyrics data when track changes
   useEffect(() => {
-    const fetchLyrics = async () => {
-      try {
-
-        if (!currentTrack?.gid) return;
-
-        // reset lyrics before fetching new ones
-        setGrooveData([]);
-        setCurrentTime(0);
-
-        // Redirect only if not already on lyrics page
-        if (pathname.startsWith("/lyrics")) {
-          router.replace(`/lyrics/${currentTrack.gid}`);
-        }
-
-        // const res = await api.get(`/lyrics/getLyrics?gid=${currentTrack.gid}`);
-        const res = await getLyricsForCurrentTrack(currentTrack.gid);
-
-        // console.log("Printing the rsponse from lyrics call ", res);
-        const data =  res;
-
-        if (!data || !data.lyricsText) {
-          // toast.error("Lyrics not found.");
-          // setError("Lyrics Not Found ");
-          throw new Error("Lyrics not available");
-        }
-        setGrooveData(data.lyricsText);
-        // setError(null);
-      } catch (err) {
-        if (err instanceof Error) {
-          // toast.error(err.message || "Failed to fetch lyrics.");
-          setGrooveData([]);
-          console.warn(err.message);
-        }else{
-          console.warn(err);
-        }
-      }
-    };
-
     fetchLyrics();
   }, [currentTrack, pathname, router]);
 
@@ -140,11 +136,10 @@ function GrooveTab() {
   const currentLine = useMemo(
     () =>
       grooveData.find(
-        (line) => line.startTime <= currentTime && line.endTime >= currentTime
+        (line) => line.startTime <= currentTime && line.endTime >= currentTime,
       ),
-    [currentTime, grooveData]
+    [currentTime, grooveData],
   );
-
   // ---- Scroll to current line ----
   useEffect(() => {
     if (currentLineRef.current && lyricsContainerRef.current) {
@@ -205,7 +200,11 @@ function GrooveTab() {
         </Link>
         <div>
           <h1 className="text-2xl pb-2">Not Showing Track?</h1>
-          <Button variant={"ghost"} className="bg-green-600 rounded-full">
+          <Button
+            variant={"ghost"}
+            onClick={() => fetchLyrics()}
+            className="bg-green-600 rounded-full"
+          >
             Click to Refresh
             <Refresh />
           </Button>
@@ -215,29 +214,29 @@ function GrooveTab() {
 
   return (
     <div
-      className="flex w-full h-full flex-col gap-2 my-2 px-1 md:px-3 "
+      className="flex flex-col flex-1 min-h-0 gap-2 my-2 px-1 md:px-3 "
       ref={lyricsContainerRef}
     >
-        {grooveData.map((item) => (
-          <div
-            key={item._id}
-            className={`cursor-pointer p-2 rounded-md transition ${
-              currentLine === item
-                ? "text-white"
-                : "hover:bg-gray-700/40 text-gray-400/90"
-            }`}
-            ref={currentLine === item ? currentLineRef : null}
-            onClick={() => handleLineClick(item.startTime)}
-          >
-            <h1 className="text-xl md:text-2xl font-medium md:font-semibold">
-              {item.line}
-            </h1>
-            <div className="text-xs flex justify-between text-gray-400">
-              <p>{formatTime(item.startTime)}</p>
-              <p>{formatTime(item.endTime)}</p>
-            </div>
+      {grooveData.map((item) => (
+        <div
+          key={item._id}
+          className={`cursor-pointer p-2 rounded-md transition ${
+            currentLine === item
+              ? "text-white"
+              : "hover:bg-gray-700/40 text-gray-400/90"
+          }`}
+          ref={currentLine === item ? currentLineRef : null}
+          onClick={() => handleLineClick(item.startTime)}
+        >
+          <h1 className="text-xl md:text-2xl font-medium md:font-semibold">
+            {item.line}
+          </h1>
+          <div className="text-xs flex justify-between text-gray-400">
+            <p>{formatTime(item.startTime)}</p>
+            <p>{formatTime(item.endTime)}</p>
           </div>
-        ))}
+        </div>
+      ))}
     </div>
   );
 }
